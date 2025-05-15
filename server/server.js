@@ -1,26 +1,28 @@
-const express = require("express");
+const express = require('express');
+const dotenv = require('dotenv');
+const sequelize = require('./config/database');
+const User = require('./models/User');
+const Home = require('./models/Home');
+const Interest = require('./models/Interest');
+
+// ⬇️ ADD THESE LINES TO IMPORT ROUTES
+const userRoutes = require('./routes/userRoutes');
+const homeRoutes = require('./routes/homeRoutes');
+const interestRoutes = require('./routes/interestRoutes');
+
+dotenv.config();
 const app = express();
-const bodyParser = require("body-parser");
-const user_router = require("./routes/auth");
-const owner_router = require("./routes/owner_profiles");
-const seeker_router = require("./routes/seeker");
-const port = 3000;
-const sequelize = require("./database/");
+app.use(express.json());
 
-sequelize
-  .authenticate()
-  .then(() => {
-    console.log("Connection has been established successfully.");
-  })
-  .catch((error) => {
-    console.error("Unable to connect to the database: ", error);
-  });
+// ⬇️ ADD ROUTE MIDDLEWARES
+app.use('/api/users/', userRoutes);
+app.use('/api/homes', homeRoutes);
+app.use('/api/interests', interestRoutes);
 
-app.use(bodyParser.json());
-app.use("/api/auth", user_router);
-app.use("/api/owner", owner_router);
-app.use("/api/seeker", seeker_router);
+// Sync models
+sequelize.sync({ alter: true }) // change to { force: true } to reset tables
+  .then(() => console.log('Database synced'))
+  .catch(err => console.error('Sync error:', err));
 
-app.listen(port, () => {
-  console.log(`server is running on port ${port}`);
-});
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
