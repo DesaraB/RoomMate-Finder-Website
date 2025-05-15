@@ -14,8 +14,9 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 
+
 // ⬇️ ADD ROUTE MIDDLEWARES
-app.use('/api/users/', userRoutes);
+app.use('/api/users', userRoutes);
 app.use('/api/homes', homeRoutes);
 app.use('/api/interests', interestRoutes);
 
