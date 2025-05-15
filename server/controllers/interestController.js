@@ -1,4 +1,4 @@
-const { Interest } = require('../models');
+const  Interest  = require('../models/interest');
 
 // Create a new interest
 exports.createInterest = async (req, res) => {
