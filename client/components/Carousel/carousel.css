@@ -1,0 +1,67 @@
+.carousel-container{
+	padding: 20px 0;
+	background-color:  #bad7f2;
+}
+.title-carousel{
+	display: flex;
+	justify-content: center;
+	color: rgb(72, 72, 168);
+	font-size: 40px;
+}
+
+#slideshow{
+	overflow: hidden;
+	height: 300px;
+	width: 70%;
+	margin: 0 auto;
+}
+.slide-wrapper{
+	width: 300%;
+	display: flex;
+	animation: slide 12s infinite linear;
+}
+
+@keyframes slide {
+	0%, 25% { transform: translateX(0); } 
+	33.33%, 58.33% { transform: translateX(-33.33333%); }
+	66.66%, 91.66% { transform: translateX(-66.66666%); } 
+	100% { transform: translateX(-100%); } 
+  }
+
+  .slide {
+	flex: 0 0 33.33333%;
+	display: flex;
+	gap: 3%;
+	padding: 20px 0;
+	min-width: 0; 
+	justify-content: center;
+  }
+
+.card-cnt{
+	width: 30%;
+	padding: 20px;
+	display: flex;
+	flex-direction: column;
+	box-shadow:0 6px 15px rgba(0,0,0,0.425) ;
+	border-radius: 7px;
+	background-color: rgb(232, 227, 227);
+}
+.user-cnt{
+	height: 40px;
+	display: flex;
+	margin-top: 20px;
+	align-items: center;
+}
+.img-cnt{
+	width: 20%;
+	
+}
+.img-cnt img{
+	width: 70px;
+	border-radius: 100px;
+
+}
+.name{
+	margin-left: 30px;
+
+}
