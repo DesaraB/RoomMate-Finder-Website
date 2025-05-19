@@ -1,11 +1,58 @@
+const bcrypt = require("bcryptjs");
 const User = require("../models/user");
 
-// Create a new user
 exports.createUser = async (req, res) => {
   try {
-    const newUser = await User.create(req.body);
+    const {
+      name,
+      email,
+      password,
+      gender,
+      dateOfBirth,
+      role,
+      phone_number,
+      profile_picture_url,
+      location,
+      budgetMin,
+      budgetMax,
+      moveInDate,
+      age,
+      children,
+      description,
+    } = req.body;
+
+    if (!name || !email || !password || !gender || !role || !dateOfBirth || !age) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser) {
+      return res.status(409).json({ error: "Email already in use" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+      gender,
+      dateOfBirth,
+      role,
+      phone_number,
+      profile_picture_url,
+      location,
+      budgetMin: role === "seeker" ? budgetMin : null,
+      budgetMax: role === "seeker" ? budgetMax : null,
+      moveInDate: role === "seeker" ? moveInDate : null,
+      age,
+      children: role === "seeker" ? children : null,
+      description: role === "seeker" ? description : null,
+    });
+
     res.status(201).json(newUser);
   } catch (err) {
+    console.error("Create user error:", err);
     res.status(400).json({ error: err.message });
   }
 };
@@ -14,8 +61,9 @@ exports.createUser = async (req, res) => {
 exports.getAllUsers = async (req, res) => {
   try {
     const users = await User.findAll();
-    res.json(users);
+    res.status(200).json(users);
   } catch (err) {
+    console.error("Get all users error:", err);
     res.status(500).json({ error: err.message });
   }
 };
@@ -24,9 +72,12 @@ exports.getAllUsers = async (req, res) => {
 exports.getUserById = async (req, res) => {
   try {
     const user = await User.findByPk(req.params.id);
-    if (!user) return res.status(404).json({ error: "User not found" });
-    res.json(user);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.status(200).json(user);
   } catch (err) {
+    console.error("Get user by ID error:", err);
     res.status(500).json({ error: err.message });
   }
 };
@@ -34,12 +85,15 @@ exports.getUserById = async (req, res) => {
 // Update user
 exports.updateUser = async (req, res) => {
   try {
-    const [updated] = await User.update(req.body, {
-      where: { id: req.params.id },
-    });
-    if (!updated) return res.status(404).json({ error: "User not found" });
-    res.json({ message: "User updated successfully" });
+    const user = await User.findByPk(req.params.id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    await user.update(req.body); // Make sure only safe fields are updated in production
+    res.status(200).json(user);
   } catch (err) {
+    console.error("Update user error:", err);
     res.status(500).json({ error: err.message });
   }
 };
@@ -47,10 +101,15 @@ exports.updateUser = async (req, res) => {
 // Delete user
 exports.deleteUser = async (req, res) => {
   try {
-    const deleted = await User.destroy({ where: { id: req.params.id } });
-    if (!deleted) return res.status(404).json({ error: "User not found" });
-    res.json({ message: "User deleted successfully" });
+    const user = await User.findByPk(req.params.id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    await user.destroy();
+    res.status(200).json({ message: "User deleted successfully" });
   } catch (err) {
+    console.error("Delete user error:", err);
     res.status(500).json({ error: err.message });
   }
 };

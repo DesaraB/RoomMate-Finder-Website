@@ -15,6 +15,18 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING, 
     allowNull: false
   },
+  gender: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  age: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  dateOfBirth: {
+    type: DataTypes.DATEONLY,
+    allowNull: true
+  },
   role: {
     type: DataTypes.ENUM('provider', 'seeker'),
     allowNull: false
@@ -30,10 +42,33 @@ const User = sequelize.define('User', {
   created_at: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW
-  }
+  },
+
+  budgetMin: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: true
+  },
+  budgetMax: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: true
+  },
+  moveInDate: {
+    type: DataTypes.DATEONLY,
+    allowNull: true
+  },
+  children: {
+    type: DataTypes.ENUM('No children', 'Children that will visit', 'Children that will live with me'),
+    allowNull: true
+  },
+  description: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+
 }, {
   tableName: 'users',
   timestamps: false
 });
+
 
 module.exports = User;
