@@ -13,7 +13,7 @@ export const HeroBanner = () => {
           </button>
         </div>
         <div className="main__img--container">
-          <img src="/images/pic1.svg" alt="Roommate" id="main__img" />
+          <img src="/images/backgr-img.jpg" alt="Roommate" id="main__img" />
         </div>
       </div>
   );
