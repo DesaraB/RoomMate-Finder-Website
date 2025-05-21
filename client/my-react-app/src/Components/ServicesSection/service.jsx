@@ -19,7 +19,7 @@ const cardData = [
 export const ServicesSection = () => {
   return (
     <div className="services">
-      <h1>How it works</h1>
+      <h1>How would you like to proceed?</h1>
       <div className="services__container">
         {cardData.map((card, index) => (
           <div
