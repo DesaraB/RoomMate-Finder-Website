@@ -5,64 +5,73 @@
 }
 
 .services h1 {
-  font-size: 2.5rem;
+  font-size: 2.2rem;
   margin-bottom: 1rem;
-  color: rgb(26, 53, 103);
+  color: #333;
+  font-weight: 600;
 }
 
 .services > p {
   font-size: 1.1rem;
-  color: rgb(72, 72, 168);
+  color: #666;
   max-width: 600px;
-  margin: 0 auto 3rem auto;
+  margin: 0 auto 4rem auto;
 }
 
 .services__container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 30px;
-  max-width: 1200px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 40px;
+  max-width: 1000px;
   margin: 0 auto;
 }
 
-.services__card-wrapper {
-  display: flex;
-  flex-direction: column;
-}
-
-.services__title {
-  color: rgb(38, 54, 132);
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-}
-
 .services__card {
-  height: 350px;
-  border-radius: 10px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
   align-items: center;
-  padding: 20px;
   text-align: center;
+  padding: 40px 30px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
 }
 
 .services__card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.icon__wrapper {
+  width: 80px;
+  height: 80px;
+  background-color: #e8f4fd;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.service__icon {
+  width: 40px;
+  height: 40px;
+  color: #544725;
+}
+
+.services__title {
+  color: #333;
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 16px;
 }
 
 .card__description {
-  color: rgba(255, 255, 255, 0.9);
+  color: #666;
   font-size: 0.95rem;
-  line-height: 1.5;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-  max-width: 90%;
+  line-height: 1.6;
+  max-width: 280px;
 }
 
 .services__learn-more {
@@ -71,7 +80,7 @@
 
 .learn-more-link {
   display: inline-block;
-  color: rgb(9, 53, 125);
+  color: #666;
   font-size: 1.1rem;
   font-weight: 500;
   text-decoration: none;
@@ -79,7 +88,7 @@
 }
 
 .learn-more-link:hover {
-  color: #0069d9;
+  color: #3b82f6;
 }
 
 .learn-more-link .arrow {
@@ -94,14 +103,20 @@
 @media screen and (max-width: 768px) {
   .services__container {
     grid-template-columns: 1fr;
-    max-width: 500px;
-  }
-
-  .services__card {
-    height: 300px;
+    max-width: 400px;
   }
 
   .services h1 {
     font-size: 2rem;
+  }
+
+  .icon__wrapper {
+    width: 70px;
+    height: 70px;
+  }
+
+  .service__icon {
+    width: 35px;
+    height: 35px;
   }
 }

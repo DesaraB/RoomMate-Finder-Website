@@ -12,7 +12,6 @@ export const HomePage = () => {
     <div className="cont">
       <HeroBanner />
       <ServicesSection />
-	  <WhoWeServe/>
       <Carousel />
       <Footer />
     </div>

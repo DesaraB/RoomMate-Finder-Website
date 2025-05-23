@@ -1,4 +1,4 @@
-.main__container {
+.hero__container {
   position: relative;
   width: 100%;
   height: 90vh;
@@ -25,6 +25,7 @@
   width: 800px;
   padding: 0 20px;
   z-index: 1;
+  position: relative;
 }
 
 .main__content h2 {
@@ -32,42 +33,270 @@
   font-weight: 700;
   margin-bottom: 1.5rem;
   color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
 }
 
 .main__content p {
   font-size: 1.1rem;
   line-height: 1.6;
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
   max-width: 700px;
   margin-left: auto;
   margin-right: auto;
-}
-
-.main__btn {
-  display: inline-block;
-  width: 30%;
-  background-color: #b0af86;
-  border: none;
-  border-radius: 4px;
-  padding: 0;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  font-size: 1rem; /* Smaller font size */
-}
-
-.main__btn:hover {
-  background-color: #0069d9;
-}
-
-.main__btn a {
-  display: inline-block;
-  padding: 12px 40px;
   color: white;
-  text-decoration: none;
-  font-weight: 500;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
 }
 
-/* Responsive styles */
+/* Hero Cards Container */
+.hero__cards {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.hero__card {
+  position: relative;
+  width: 280px;
+  height: 320px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease;
+}
+
+.hero__card:hover {
+  transform: translateY(-5px);
+}
+
+.hero__overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  border-radius: 20px;
+}
+
+.hero__overlay--teal {
+  background: linear-gradient(
+    135deg,
+    rgba(235, 209, 105, 0.95) 0%,
+    rgba(115, 105, 58, 0.95) 100%
+  );
+}
+
+.hero__overlay--orange {
+  background: linear-gradient(
+    135deg,
+    rgba(133, 106, 87, 0.95) 0%,
+    rgba(205, 150, 98, 0.95) 100%
+  );
+}
+
+.hero__content {
+  position: relative;
+  z-index: 2;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: white;
+}
+
+.hero__title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 1rem 0;
+  color: white;
+  line-height: 1.2;
+}
+
+.hero__btn {
+  display: inline-block;
+  padding: 0.8rem 1.5rem;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  margin-top: 1rem;
+}
+
+.hero__btn--teal {
+  background-color: rgba(148, 127, 73, 0.9);
+  color: white;
+}
+
+.hero__btn--teal:hover {
+  background-color: rgba(36, 94, 97, 0.9);
+  transform: translateY(-2px);
+}
+
+.hero__btn--orange {
+  background-color: rgba(165, 100, 47, 0.9);
+  color: white;
+}
+
+.hero__btn--orange:hover {
+  background-color: rgba(212, 68, 57, 0.9);
+  transform: translateY(-2px);
+}
+
+/* Illustration Styles - Smaller */
+.hero__illustration {
+  position: relative;
+  height: 100px;
+  margin-bottom: 0.5rem;
+}
+
+/* Person Illustration - Smaller */
+.person-illustration {
+  position: relative;
+  display: inline-block;
+}
+
+.person-head {
+  width: 25px;
+  height: 25px;
+  background-color: #f4d1ae;
+  border-radius: 50%;
+  margin: 0 auto 8px;
+  position: relative;
+}
+
+.person-head::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 20px;
+  background-color: #333;
+  border-radius: 15px 15px 0 0;
+}
+
+.person-body {
+  width: 35px;
+  height: 45px;
+  background-color: white;
+  margin: 0 auto 8px;
+  border-radius: 10px;
+  position: relative;
+}
+
+.person-body::before,
+.person-body::after {
+  content: "";
+  position: absolute;
+  width: 12px;
+  height: 30px;
+  background-color: white;
+  border-radius: 6px;
+  top: 8px;
+}
+
+.person-body::before {
+  left: -15px;
+}
+
+.person-body::after {
+  right: -15px;
+}
+
+.person-legs {
+  width: 25px;
+  height: 35px;
+  background-color: #333;
+  margin: 0 auto;
+  border-radius: 0 0 12px 12px;
+}
+
+/* House Illustration - Smaller */
+.house-illustration {
+  position: relative;
+  display: inline-block;
+  margin-right: 15px;
+}
+
+.house-roof {
+  width: 0;
+  height: 0;
+  border-left: 30px solid transparent;
+  border-right: 30px solid transparent;
+  border-bottom: 25px solid #8b4513;
+  margin: 0 auto;
+}
+
+.house-body {
+  width: 50px;
+  height: 50px;
+  background-color: #d2691e;
+  margin: 0 auto;
+  position: relative;
+}
+
+.house-windows {
+  position: absolute;
+  top: 29px;
+  left: 14px;
+  width: 10px;
+  height: 10px;
+  background-color: #87ceeb;
+  border: 1px solid white;
+}
+
+.house-windows::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: -20px;
+  width: 10px;
+  height: 10px;
+  background-color: #87ceeb;
+  border: 1px solid white;
+}
+
+.house-door {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 15px;
+  height: 25px;
+  background-color: #654321;
+  border-radius: 2px 2px 0 0;
+}
+
+.location-pin {
+  position: absolute;
+  top: -15px;
+  left: 120px;
+  width: 15px;
+  height: 20px;
+  background-color: #ffd700;
+  clip-path: polygon(50% 100%, 0% 0%, 100% 0%);
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+}
+
+.location-pin::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  background-color: #ff6347;
+  border-radius: 50%;
+}
+
+/* Responsive Design */
 @media screen and (max-width: 768px) {
   .main__content h2 {
     font-size: 2rem;
@@ -76,6 +305,30 @@
   .main__content p {
     font-size: 1rem;
   }
+
+  .hero__cards {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .hero__card {
+    width: 260px;
+    height: 280px;
+  }
+
+  .hero__title {
+    font-size: 1.2rem;
+  }
+
+  .hero__btn {
+    padding: 0.7rem 1.2rem;
+    font-size: 0.8rem;
+  }
+
+  .hero__illustration {
+    height: 80px;
+  }
 }
 
 @media screen and (max-width: 480px) {
@@ -83,7 +336,25 @@
     font-size: 1.7rem;
   }
 
-  .main__btn a {
-    padding: 10px 30px;
+  .hero__card {
+    width: 240px;
+    height: 260px;
+  }
+
+  .hero__content {
+    padding: 1.5rem 1rem;
+  }
+
+  .hero__title {
+    font-size: 1.1rem;
+  }
+
+  .hero__btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.75rem;
+  }
+
+  .hero__illustration {
+    height: 70px;
   }
 }
