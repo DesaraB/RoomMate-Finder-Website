@@ -18,10 +18,12 @@ export const Navbar = () => {
             <Link to="/listings">Listings</Link>
           </li>
           <li>
-            <Link to="/about-us">About Us</Link>
+            <Link to="/about-us">About</Link>
           </li>
           <li>
             <Link to="/contact">Contact</Link>
+          </li>
+          <li><Link to="/contact">How It Works</Link>
           </li>
         </ul>
       </div>
