@@ -119,14 +119,18 @@
 .input-icon {
   position: absolute;
   left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
   font-size: 16px;
-  z-index: 2;
+  z-index: 1;
+  pointer-events: none;
+  color: #8b7355;
 }
 
 .input-wrapper input,
 .input-wrapper select {
   width: 100%;
-  padding: 14px 16px 14px 45px;
+  padding: 14px 16px 14px 48px;
   border: 2px solid #e5e7eb;
   border-radius: 10px;
   font-size: 16px;
@@ -391,11 +395,16 @@
 
   .input-wrapper input,
   .input-wrapper select {
-    padding: 12px 14px 12px 40px;
+    padding: 12px 14px 12px 50px;
+  }
+
+  .input-icon {
+    left: 14px;
+    font-size: 16px;
   }
 
   .register-btn {
-    padding: 12px;
+    padding: 14px;
   }
 
   .radio-option {
@@ -423,12 +432,12 @@
 
   .input-wrapper input,
   .input-wrapper select {
-    padding: 12px 14px 12px 38px;
+    padding: 12px 14px 12px 47px;
     font-size: 15px;
   }
 
   .input-icon {
-    left: 10px;
+    left: 12px;
     font-size: 14px;
   }
 

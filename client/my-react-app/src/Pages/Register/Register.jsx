@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import "./register.css";
 
+// eslint-disable-next-line
+
 const Register = () => {
   // Required fields from your API
   const [name, setName] = useState("");
