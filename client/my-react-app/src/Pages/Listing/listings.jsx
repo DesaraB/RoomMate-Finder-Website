@@ -1,85 +1,141 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./listings.css";
-
+// eslint-disable-next-line
 const Listings = () => {
-  const [listings, setListings] = useState([]);
-  const [filteredListings, setFilteredListings] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
-  
+  // Sample listings data for visual display
+  const sampleListings = [
+    {
+      id: 1,
+      title: "Modern Downtown Apartment",
+      location: "Downtown",
+      price: 1200,
+      bedrooms: 2,
+      roomType: "private",
+      privateBathroom: true,
+      description:
+        "Beautiful modern apartment in the heart of downtown. Perfect for working professionals.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400",
+    },
+    {
+      id: 2,
+      title: "Cozy Studio Near University",
+      location: "University District",
+      price: 800,
+      bedrooms: 1,
+      roomType: "studio",
+      privateBathroom: false,
+      description:
+        "Perfect for students! Walking distance to campus and public transportation.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400",
+    },
+    {
+      id: 3,
+      title: "Shared House with Garden",
+      location: "Suburbs",
+      price: 600,
+      bedrooms: 3,
+      roomType: "shared",
+      privateBathroom: false,
+      description: "Friendly roommates, beautiful garden, quiet neighborhood.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1448630360428-65456885c650?w=400",
+    },
+    {
+      id: 4,
+      title: "Luxury Loft",
+      location: "City Center",
+      price: 1800,
+      bedrooms: 2,
+      roomType: "private",
+      privateBathroom: true,
+      description:
+        "High-end loft with amazing city views and modern amenities.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400",
+    },
+    {
+      id: 5,
+      title: "Bright Studio Apartment",
+      location: "Midtown",
+      price: 950,
+      bedrooms: 1,
+      roomType: "studio",
+      privateBathroom: true,
+      description:
+        "Bright and airy studio with large windows and modern kitchen.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1560448075-bb485b067938?w=400",
+    },
+    {
+      id: 6,
+      title: "Family Home Room",
+      location: "Residential Area",
+      price: 700,
+      bedrooms: 4,
+      roomType: "private",
+      privateBathroom: false,
+      description:
+        "Comfortable room in a family home with access to common areas.",
+      imageUrl:
+        "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400",
+    },
+  ];
+
+  const [filteredListings, setFilteredListings] = useState(sampleListings);
+
   // Filter states
   const [filters, setFilters] = useState({
     location: "",
     minPrice: "",
     maxPrice: "",
     bedrooms: "",
-    roomType: ""
+    roomType: "",
   });
 
-  // Fetch listings from your API
+  // Apply filters when they change
   useEffect(() => {
-    const fetchListings = async () => {
-      try {
-		const response = await fetch("http://localhost:3001/api/listings");
-        if (response.ok) {
-          const data = await response.json();
-          setListings(data);
-          setFilteredListings(data);
-        } else {
-          setError("Failed to load listings");
-        }
-      } catch (err) {
-        setError("Network error. Please try again.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchListings();
-  }, []);
-
-  // Apply filters
-  useEffect(() => {
-    let filtered = listings;
+    let filtered = sampleListings;
 
     if (filters.location) {
-      filtered = filtered.filter(listing => 
-        listing.location?.toLowerCase().includes(filters.location.toLowerCase())
+      filtered = filtered.filter((listing) =>
+        listing.location.toLowerCase().includes(filters.location.toLowerCase())
       );
     }
 
     if (filters.minPrice) {
-      filtered = filtered.filter(listing => 
-        listing.price >= parseInt(filters.minPrice)
+      filtered = filtered.filter(
+        (listing) => listing.price >= parseInt(filters.minPrice)
       );
     }
 
     if (filters.maxPrice) {
-      filtered = filtered.filter(listing => 
-        listing.price <= parseInt(filters.maxPrice)
+      filtered = filtered.filter(
+        (listing) => listing.price <= parseInt(filters.maxPrice)
       );
     }
 
     if (filters.bedrooms) {
-      filtered = filtered.filter(listing => 
-        listing.bedrooms === parseInt(filters.bedrooms)
+      filtered = filtered.filter(
+        (listing) => listing.bedrooms === parseInt(filters.bedrooms)
       );
     }
 
     if (filters.roomType) {
-      filtered = filtered.filter(listing => 
-        listing.roomType === filters.roomType
+      filtered = filtered.filter(
+        (listing) => listing.roomType === filters.roomType
       );
     }
 
     setFilteredListings(filtered);
-  }, [filters, listings]);
+  }, [filters]);
 
   const handleFilterChange = (field, value) => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
@@ -89,41 +145,22 @@ const Listings = () => {
       minPrice: "",
       maxPrice: "",
       bedrooms: "",
-      roomType: ""
+      roomType: "",
     });
   };
-
-  if (isLoading) {
-    return (
-      <div className="listings-page">
-        <div className="listings-container">
-          <div className="loading-message">Loading listings...</div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="listings-page">
-        <div className="listings-container">
-          <div className="error-message">{error}</div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="listings-page">
       <div className="listings-container">
         <div className="listings-header">
           <h1>Available Listings</h1>
+          <p>Find your perfect roommate or housing situation</p>
         </div>
 
         {/* Filter Section */}
         <div className="filter-section">
           <h3>Filter Listings</h3>
-          
+
           <div className="filter-grid">
             <div className="filter-group">
               <label>Location:</label>
@@ -198,43 +235,41 @@ const Listings = () => {
             filteredListings.map((listing) => (
               <div key={listing.id} className="listing-card">
                 <div className="listing-image">
-                  {listing.imageUrl ? (
-                    <img src={listing.imageUrl} alt={listing.title} />
-                  ) : (
-                    <div className="placeholder-image">
-                      <span>🏠</span>
-                    </div>
-                  )}
-                  <div className="price-tag">
-                    ${listing.price}/mo
-                  </div>
+                  <img src={listing.imageUrl} alt={listing.title} />
+                  <div className="price-tag">${listing.price}/mo</div>
                 </div>
-                
+
                 <div className="listing-content">
                   <h3 className="listing-title">{listing.title}</h3>
-                  
-                  <div className="listing-location">
-                    📍 {listing.location}
-                  </div>
-                  
+
+                  <div className="listing-location">📍 {listing.location}</div>
+
                   <div className="listing-details">
                     <span className="room-type">
-                      {listing.roomType === 'private' ? 'Private Room' : 
-                       listing.roomType === 'shared' ? 'Shared Room' : 
-                       listing.roomType === 'studio' ? 'Studio' : 'Room'}
+                      {listing.roomType === "private"
+                        ? "Private Room"
+                        : listing.roomType === "shared"
+                        ? "Shared Room"
+                        : listing.roomType === "studio"
+                        ? "Studio"
+                        : "Room"}
                     </span>
                     <span className="bathroom-type">
-                      {listing.privateBathroom ? 'Private Bathroom' : 'Shared Bathroom'}
+                      {listing.privateBathroom
+                        ? "Private Bathroom"
+                        : "Shared Bathroom"}
+                    </span>
+                    <span className="bedrooms">
+                      {listing.bedrooms}{" "}
+                      {listing.bedrooms === 1 ? "Bedroom" : "Bedrooms"}
                     </span>
                   </div>
-                  
+
                   <div className="listing-description">
                     {listing.description}
                   </div>
-                  
-                  <Link to={`/listings/${listing.id}`} className="view-details-btn">
-                    View Details →
-                  </Link>
+
+                  <button className="view-details-btn">View Details →</button>
                 </div>
               </div>
             ))

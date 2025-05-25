@@ -7,7 +7,9 @@ import Login from "./Pages/Login/Login";
 import Contact from "./Pages/Contact/Contact";
 import HowItWorks from "./Pages/How_it_works/HowItWorks";
 import Listings from "./Pages/Listing/listings";
+import ProviderDashboard from "./Pages/ProviderDashboard/provider-dashboard.jsx";
 // eslint-disable-next-line
+
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function App() {
@@ -25,6 +27,7 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/how it works" element={<HowItWorks />} />
           <Route path="/listings" element={<Listings/>} />
+		  <Route path="/provider-dashboard" element={<ProviderDashboard />} />
           {/* Fallback for undefined routes */}
           <Route path="*" element={<h2>404: Page Not Found</h2>} />
         </Routes>
