@@ -1,107 +1,157 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
-import "./register.css";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import './register.css'; // Make sure to import your CSS file
 
-// eslint-disable-next-line
-
-const Register = () => {
-  // Required fields from your API
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [gender, setGender] = useState("");
-  const [dateOfBirth, setDateOfBirth] = useState("");
-  const [role, setRole] = useState("");
-  const [age, setAge] = useState("");
+function Register() {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    name: '',
+    role: 'seeker', // Default to seeker
+    gender: '',
+    age: '',
+    phone_number: '',
+    description: '',
+    location: ''
+  });
   
-  // Optional fields
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [location, setLocation] = useState("");
-  const [description, setDescription] = useState("");
+  // Additional fields for seekers
+  const [seekerData, setSeekerData] = useState({
+    budgetMin: '',
+    budgetMax: '',
+    moveInDate: '',
+    children: 'No children'
+  });
   
-  // Seeker-specific fields (conditional)
-  const [budgetMin, setBudgetMin] = useState("");
-  const [budgetMax, setBudgetMax] = useState("");
-  const [moveInDate, setMoveInDate] = useState("");
-  const [children, setChildren] = useState("");
+  // Additional fields for providers (home details)
+  const [providerData, setProviderData] = useState({
+    homeTitle: '',
+    homeDescription: '',
+    homeLocation: '',
+    homePrice: '',
+    bedrooms: '',
+    bathrooms: '',
+    propertyType: '',
+    availableFrom: '',
+    leaseTerm: '',
+    amenities: '',
+    photoUrl: ''
+  });
   
-  // Form state
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [agreeToTerms, setAgreeToTerms] = useState(false);
-  const [formError, setFormError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
 
+  // Handle input changes for main form
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+  };
+
+  // Handle input changes for seeker-specific fields
+  const handleSeekerChange = (e) => {
+    const { name, value } = e.target;
+    setSeekerData({
+      ...seekerData,
+      [name]: value
+    });
+  };
+
+  // Handle input changes for provider-specific fields
+  const handleProviderChange = (e) => {
+    const { name, value } = e.target;
+    setProviderData({
+      ...providerData,
+      [name]: value
+    });
+  };
+
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setFormError("");
+    setError('');
     setIsLoading(true);
 
-    // Validation for required fields
-    if (!name || !email || !password || !confirmPassword || !gender || !dateOfBirth || !role || !age) {
-      setFormError("Please fill in all required fields");
-      setIsLoading(false);
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setFormError("Passwords do not match");
-      setIsLoading(false);
-      return;
-    }
-
-    if (password.length < 6) {
-      setFormError("Password must be at least 6 characters long");
-      setIsLoading(false);
-      return;
-    }
-
-    if (!agreeToTerms) {
-      setFormError("Please agree to the Terms of Service");
-      setIsLoading(false);
-      return;
-    }
-
     try {
-      // Prepare user data according to your API
+      // Validate form
+      if (!formData.username || !formData.email || !formData.password || !formData.name || !formData.gender) {
+        setError('Please fill in all required fields');
+        setIsLoading(false);
+        return;
+      }
+
+      if (formData.password !== formData.confirmPassword) {
+        setError('Passwords do not match');
+        setIsLoading(false);
+        return;
+      }
+
+      // Combine data for API request
       const userData = {
-        name,
-        email,
-        password,
-        gender,
-        dateOfBirth,
-        role,
-        age: parseInt(age),
-        phone_number: phoneNumber,
-        location,
-        description: role === "seeker" ? description : null,
-        budgetMin: role === "seeker" && budgetMin ? parseInt(budgetMin) : null,
-        budgetMax: role === "seeker" && budgetMax ? parseInt(budgetMax) : null,
-        moveInDate: role === "seeker" ? moveInDate : null,
-        children: role === "seeker" ? children : null,
+        ...formData
       };
 
-      const response = await fetch("/api/users", {
-        method: "POST",
+      // Add seeker-specific fields if role is seeker
+      if (formData.role === 'seeker') {
+        userData.budgetMin = seekerData.budgetMin ? parseInt(seekerData.budgetMin) : null;
+        userData.budgetMax = seekerData.budgetMax ? parseInt(seekerData.budgetMax) : null;
+        userData.moveInDate = seekerData.moveInDate || null;
+        userData.children = seekerData.children;
+      }
+
+      // Add provider-specific fields if role is provider
+      if (formData.role === 'provider') {
+        userData.homeData = {
+          title: providerData.homeTitle,
+          description: providerData.homeDescription,
+          location: providerData.homeLocation,
+          price: providerData.homePrice ? parseFloat(providerData.homePrice) : null,
+          bedrooms: providerData.bedrooms ? parseInt(providerData.bedrooms) : null,
+          bathrooms: providerData.bathrooms ? parseFloat(providerData.bathrooms) : null,
+          property_type: providerData.propertyType,
+          available_from: providerData.availableFrom || null,
+          lease_term: providerData.leaseTerm,
+          amenities: providerData.amenities,
+          photo_url: providerData.photoUrl
+        };
+      }
+
+      // Remove confirmPassword as it's not needed for the API
+      delete userData.confirmPassword;
+
+      // Send registration request to your backend
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(userData),
+        body: JSON.stringify(userData)
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        alert("Registration successful! Welcome to RoommateFinder!");
-        navigate("/login");
-      } else {
-        const errorData = await response.json();
-        setFormError(errorData.error || "Registration failed. Please try again.");
+      if (!response.ok) {
+        throw new Error('Registration failed');
       }
-    } catch (error) {
-      setFormError("Network error. Please check your connection and try again.");
+
+      const result = await response.json();
+      
+      // Store user data and redirect
+      localStorage.setItem('user', JSON.stringify(result));
+      
+      // Redirect based on role
+      if (result.role === 'provider') {
+        navigate('/provider-dashboard');
+      } else {
+        navigate('/seeker-dashboard');
+      }
+    } catch (err) {
+      setError(err.message || 'Registration failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -112,153 +162,172 @@ const Register = () => {
       <div className="register-container">
         <div className="register-card">
           <div className="register-header">
-            <h1>Join RoommateFinder</h1>
-            <p>Create your profile to find the perfect roommate match</p>
+            <h1>Join RoomMate Finder</h1>
+            <p>Find your perfect living situation today</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="register-form">
-            {formError && (
-              <div className="error-message">
-                {formError}
-              </div>
-            )}
-
-            {/* Account Information Section */}
+          {error && (
+            <div className="error-message">{error}</div>
+          )}
+          
+          <form className="register-form" onSubmit={handleSubmit}>
+            {/* Account Information */}
             <div className="form-section">
               <h3 className="section-title">Account Information</h3>
               
               <div className="form-group">
-                <label htmlFor="email">Email Address *</label>
+                <label htmlFor="username">Username *</label>
                 <div className="input-wrapper">
-                  <span className="input-icon">📧</span>
+                  <span className="input-icon icon-user"></span>
                   <input
-                    type="email"
-                    id="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your email"
+                    id="username"
+                    name="username"
+                    type="text"
                     required
+                    placeholder="Choose a unique username"
+                    value={formData.username}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
 
+              <div className="form-group">
+                <label htmlFor="email">Email Address *</label>
+                <div className="input-wrapper">
+                  <span className="input-icon icon-email"></span>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    placeholder="your.email@example.com"
+                    value={formData.email}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+              
               <div className="password-row">
                 <div className="form-group">
                   <label htmlFor="password">Password *</label>
                   <div className="input-wrapper">
-                    <span className="input-icon">🔒</span>
+                    <span className="input-icon icon-lock"></span>
                     <input
-                      type={showPassword ? "text" : "password"}
                       id="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Create a password"
+                      name="password"
+                      type={showPassword ? "text" : "password"}
                       required
+                      placeholder="Create a strong password"
+                      value={formData.password}
+                      onChange={handleChange}
                     />
                     <button
                       type="button"
                       className="password-toggle"
                       onClick={() => setShowPassword(!showPassword)}
                     >
-                      {showPassword ? "🙈" : "👁️"}
+                      {showPassword ? "🙈" : "👁"}
                     </button>
                   </div>
                 </div>
-
+                
                 <div className="form-group">
                   <label htmlFor="confirmPassword">Confirm Password *</label>
                   <div className="input-wrapper">
-                    <span className="input-icon">🔒</span>
+                    <span className="input-icon icon-lock"></span>
                     <input
-                      type={showConfirmPassword ? "text" : "password"}
                       id="confirmPassword"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      placeholder="Confirm password"
+                      name="confirmPassword"
+                      type={showConfirmPassword ? "text" : "password"}
                       required
+                      placeholder="Confirm your password"
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
                     />
                     <button
                       type="button"
                       className="password-toggle"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     >
-                      {showConfirmPassword ? "🙈" : "👁️"}
+                      {showConfirmPassword ? "🙈" : "👁"}
                     </button>
                   </div>
                 </div>
               </div>
             </div>
-
-            {/* Personal Information Section */}
+            
+            {/* Personal Information */}
             <div className="form-section">
               <h3 className="section-title">Personal Information</h3>
               
               <div className="form-group">
                 <label htmlFor="name">Full Name *</label>
                 <div className="input-wrapper">
-                  <span className="input-icon">👤</span>
+                  <span className="input-icon icon-person"></span>
                   <input
-                    type="text"
                     id="name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Enter your full name"
+                    name="name"
+                    type="text"
                     required
+                    placeholder="Enter your full name"
+                    value={formData.name}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
-
+              
               <div className="form-group">
                 <label htmlFor="role">I am a *</label>
                 <div className="radio-group">
-                  <label className="radio-option">
+                  <div className="radio-option">
                     <input
                       type="radio"
-                      name="role"
-                      value="provider"
-                      checked={role === "provider"}
-                      onChange={(e) => setRole(e.target.value)}
-                      required
-                    />
-                    <span className="radio-label">
-                      <span className="radio-icon">🏠</span>
-                      <div>
-                        <strong>Room Provider</strong>
-                        <small>I have a place and looking for roommates</small>
-                      </div>
-                    </span>
-                  </label>
-                  
-                  <label className="radio-option">
-                    <input
-                      type="radio"
+                      id="seeker"
                       name="role"
                       value="seeker"
-                      checked={role === "seeker"}
-                      onChange={(e) => setRole(e.target.value)}
-                      required
+                      checked={formData.role === 'seeker'}
+                      onChange={handleChange}
                     />
-                    <span className="radio-label">
+                    <label htmlFor="seeker" className="radio-label">
                       <span className="radio-icon">🔍</span>
                       <div>
                         <strong>Room Seeker</strong>
-                        <small>I'm looking for a place to live</small>
+                        <small>Looking for a place to live</small>
                       </div>
-                    </span>
-                  </label>
+                    </label>
+                  </div>
+                  
+                  <div className="radio-option">
+                    <input
+                      type="radio"
+                      id="provider"
+                      name="role"
+                      value="provider"
+                      checked={formData.role === 'provider'}
+                      onChange={handleChange}
+                    />
+                    <label htmlFor="provider" className="radio-label">
+                      <span className="radio-icon">🏠</span>
+                      <div>
+                        <strong>Room Provider</strong>
+                        <small>Have a place to share</small>
+                      </div>
+                    </label>
+                  </div>
                 </div>
               </div>
-
+              
               <div className="personal-row">
                 <div className="form-group">
                   <label htmlFor="gender">Gender *</label>
                   <div className="input-wrapper">
-                    <span className="input-icon">⚧️</span>
+                    <span className="input-icon icon-gender"></span>
                     <select
                       id="gender"
-                      value={gender}
-                      onChange={(e) => setGender(e.target.value)}
+                      name="gender"
                       required
+                      value={formData.gender}
+                      onChange={handleChange}
                     >
                       <option value="">Select gender</option>
                       <option value="male">Male</option>
@@ -268,193 +337,355 @@ const Register = () => {
                     </select>
                   </div>
                 </div>
-
+                
                 <div className="form-group">
-                  <label htmlFor="age">Age *</label>
+                  <label htmlFor="age">Age</label>
                   <div className="input-wrapper">
-                    <span className="input-icon">🎂</span>
+                    <span className="input-icon icon-age"></span>
                     <input
-                      type="number"
                       id="age"
-                      value={age}
-                      onChange={(e) => setAge(e.target.value)}
-                      placeholder="Age"
+                      name="age"
+                      type="number"
                       min="18"
-                      max="99"
-                      required
+                      max="120"
+                      placeholder="25"
+                      value={formData.age}
+                      onChange={handleChange}
                     />
                   </div>
                 </div>
               </div>
-
+              
               <div className="form-group">
-                <label htmlFor="dateOfBirth">Date of Birth *</label>
+                <label htmlFor="phone_number">Phone Number</label>
                 <div className="input-wrapper">
-                  <span className="input-icon">📅</span>
+                  <span className="input-icon icon-phone"></span>
                   <input
-                    type="date"
-                    id="dateOfBirth"
-                    value={dateOfBirth}
-                    onChange={(e) => setDateOfBirth(e.target.value)}
-                    required
+                    id="phone_number"
+                    name="phone_number"
+                    type="tel"
+                    placeholder="(555) 123-4567"
+                    value={formData.phone_number}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
-
-              <div className="personal-row">
-                <div className="form-group">
-                  <label htmlFor="phoneNumber">Phone Number</label>
-                  <div className="input-wrapper">
-                    <span className="input-icon">📱</span>
-                    <input
-                      type="tel"
-                      id="phoneNumber"
-                      value={phoneNumber}
-                      onChange={(e) => setPhoneNumber(e.target.value)}
-                      placeholder="(555) 123-4567"
-                    />
-                  </div>
+              
+              <div className="form-group">
+                <label htmlFor="location">Location</label>
+                <div className="input-wrapper">
+                  <span className="input-icon icon-location"></span>
+                  <input
+                    id="location"
+                    name="location"
+                    type="text"
+                    placeholder="City, State"
+                    value={formData.location}
+                    onChange={handleChange}
+                  />
                 </div>
-
-                <div className="form-group">
-                  <label htmlFor="location">Location</label>
-                  <div className="input-wrapper">
-                    <span className="input-icon">📍</span>
-                    <input
-                      type="text"
-                      id="location"
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
-                      placeholder="City, State"
-                    />
-                  </div>
+              </div>
+              
+              <div className="form-group">
+                <label htmlFor="description">About Me</label>
+                <div className="textarea-wrapper">
+                  <textarea
+                    id="description"
+                    name="description"
+                    rows="3"
+                    placeholder="Tell potential roommates about yourself, your lifestyle, interests..."
+                    value={formData.description}
+                    onChange={handleChange}
+                  />
                 </div>
               </div>
             </div>
-
-            {/* Seeker-specific fields */}
-            {role === "seeker" && (
-              <div className="form-section">
-                <h3 className="section-title">Room Seeker Information</h3>
+            
+            {/* Seeker Preferences */}
+            {formData.role === 'seeker' && (
+              <div className="form-section seeker-section">
+                <h3 className="section-title">Your Preferences</h3>
                 
-                <div className="personal-row">
+                <div className="grid-row">
                   <div className="form-group">
-                    <label htmlFor="budgetMin">Budget Min ($)</label>
+                    <label htmlFor="budgetMin">Min Budget ($)</label>
                     <div className="input-wrapper">
-                      <span className="input-icon">💰</span>
+                      <span className="input-icon icon-budget"></span>
                       <input
-                        type="number"
                         id="budgetMin"
-                        value={budgetMin}
-                        onChange={(e) => setBudgetMin(e.target.value)}
-                        placeholder="500"
+                        name="budgetMin"
+                        type="number"
                         min="0"
+                        placeholder="500"
+                        value={seekerData.budgetMin}
+                        onChange={handleSeekerChange}
                       />
                     </div>
                   </div>
-
+                  
                   <div className="form-group">
-                    <label htmlFor="budgetMax">Budget Max ($)</label>
+                    <label htmlFor="budgetMax">Max Budget ($)</label>
                     <div className="input-wrapper">
-                      <span className="input-icon">💰</span>
+                      <span className="input-icon icon-budget"></span>
                       <input
-                        type="number"
                         id="budgetMax"
-                        value={budgetMax}
-                        onChange={(e) => setBudgetMax(e.target.value)}
-                        placeholder="1000"
+                        name="budgetMax"
+                        type="number"
                         min="0"
+                        placeholder="1500"
+                        value={seekerData.budgetMax}
+                        onChange={handleSeekerChange}
                       />
                     </div>
                   </div>
                 </div>
-
-                <div className="personal-row">
+                
+                <div className="form-group">
+                  <label htmlFor="moveInDate">Preferred Move-In Date</label>
+                  <div className="input-wrapper">
+                    <span className="input-icon icon-calendar"></span>
+                    <input
+                      id="moveInDate"
+                      name="moveInDate"
+                      type="date"
+                      value={seekerData.moveInDate}
+                      onChange={handleSeekerChange}
+                    />
+                  </div>
+                </div>
+                
+                <div className="form-group">
+                  <label htmlFor="children">Children</label>
+                  <div className="input-wrapper">
+                    <span className="input-icon icon-children"></span>
+                    <select
+                      id="children"
+                      name="children"
+                      value={seekerData.children}
+                      onChange={handleSeekerChange}
+                    >
+                      <option value="No children">No children</option>
+                      <option value="Have children">Have children</option>
+                      <option value="Expecting children">Expecting children</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {/* Provider Property Details */}
+            {formData.role === 'provider' && (
+              <div className="form-section provider-section">
+                <h3 className="section-title">Property Details</h3>
+                
+                <div className="form-group">
+                  <label htmlFor="homeTitle">Property Title *</label>
+                  <div className="input-wrapper">
+                    <span className="input-icon icon-home"></span>
+                    <input
+                      id="homeTitle"
+                      name="homeTitle"
+                      type="text"
+                      required
+                      placeholder="e.g., Modern Downtown Apartment"
+                      value={providerData.homeTitle}
+                      onChange={handleProviderChange}
+                    />
+                  </div>
+                </div>
+                
+                <div className="form-group">
+                  <label htmlFor="homeDescription">Property Description</label>
+                  <div className="textarea-wrapper">
+                    <textarea
+                      id="homeDescription"
+                      name="homeDescription"
+                      rows="3"
+                      placeholder="Describe your property and what makes it special..."
+                      value={providerData.homeDescription}
+                      onChange={handleProviderChange}
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid-row">
                   <div className="form-group">
-                    <label htmlFor="moveInDate">Move-in Date</label>
+                    <label htmlFor="homeLocation">Property Location *</label>
                     <div className="input-wrapper">
-                      <span className="input-icon">📅</span>
+                      <span className="input-icon icon-location"></span>
                       <input
-                        type="date"
-                        id="moveInDate"
-                        value={moveInDate}
-                        onChange={(e) => setMoveInDate(e.target.value)}
+                        id="homeLocation"
+                        name="homeLocation"
+                        type="text"
+                        required
+                        placeholder="City, State"
+                        value={providerData.homeLocation}
+                        onChange={handleProviderChange}
                       />
                     </div>
                   </div>
-
+                  
                   <div className="form-group">
-                    <label htmlFor="children">Children</label>
+                    <label htmlFor="homePrice">Monthly Rent ($) *</label>
                     <div className="input-wrapper">
-                      <span className="input-icon">👶</span>
+                      <span className="input-icon icon-price"></span>
+                      <input
+                        id="homePrice"
+                        name="homePrice"
+                        type="number"
+                        min="0"
+                        required
+                        placeholder="1200"
+                        value={providerData.homePrice}
+                        onChange={handleProviderChange}
+                      />
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="grid-row-3">
+                  <div className="form-group">
+                    <label htmlFor="bedrooms">Bedrooms *</label>
+                    <div className="input-wrapper">
+                      <span className="input-icon icon-bed"></span>
+                      <input
+                        id="bedrooms"
+                        name="bedrooms"
+                        type="number"
+                        min="0"
+                        required
+                        placeholder="2"
+                        value={providerData.bedrooms}
+                        onChange={handleProviderChange}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="form-group">
+                    <label htmlFor="bathrooms">Bathrooms *</label>
+                    <div className="input-wrapper">
+                      <span className="input-icon icon-bath"></span>
+                      <input
+                        id="bathrooms"
+                        name="bathrooms"
+                        type="number"
+                        min="0"
+                        step="0.5"
+                        required
+                        placeholder="1.5"
+                        value={providerData.bathrooms}
+                        onChange={handleProviderChange}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="form-group">
+                    <label htmlFor="propertyType">Property Type *</label>
+                    <div className="input-wrapper">
+                      <span className="input-icon icon-type"></span>
                       <select
-                        id="children"
-                        value={children}
-                        onChange={(e) => setChildren(e.target.value)}
+                        id="propertyType"
+                        name="propertyType"
+                        required
+                        value={providerData.propertyType}
+                        onChange={handleProviderChange}
                       >
-                        <option value="">Select option</option>
-                        <option value="none">No children</option>
-                        <option value="1">1 child</option>
-                        <option value="2">2 children</option>
-                        <option value="3+">3+ children</option>
+                        <option value="">Select type</option>
+                        <option value="apartment">🏢 Apartment</option>
+                        <option value="house">🏡 House</option>
+                        <option value="condo">🏙 Condo</option>
+                        <option value="studio">🏠 Studio</option>
                       </select>
                     </div>
                   </div>
                 </div>
-
+                
+                <div className="grid-row">
+                  <div className="form-group">
+                    <label htmlFor="availableFrom">Available From</label>
+                    <div className="input-wrapper">
+                      <span className="input-icon icon-calendar"></span>
+                      <input
+                        id="availableFrom"
+                        name="availableFrom"
+                        type="date"
+                        value={providerData.availableFrom}
+                        onChange={handleProviderChange}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="form-group">
+                    <label htmlFor="leaseTerm">Lease Term</label>
+                    <div className="input-wrapper">
+                      <span className="input-icon icon-lease"></span>
+                      <input
+                        id="leaseTerm"
+                        name="leaseTerm"
+                        type="text"
+                        placeholder="e.g., 12 months, flexible"
+                        value={providerData.leaseTerm}
+                        onChange={handleProviderChange}
+                      />
+                    </div>
+                  </div>
+                </div>
+                
                 <div className="form-group">
-                  <label htmlFor="description">About Me</label>
+                  <label htmlFor="amenities">Amenities</label>
                   <div className="textarea-wrapper">
                     <textarea
-                      id="description"
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      placeholder="Tell potential roommates about yourself..."
-                      rows="4"
+                      id="amenities"
+                      name="amenities"
+                      rows="2"
+                      placeholder="e.g., WiFi, air conditioning, balcony, parking, gym..."
+                      value={providerData.amenities}
+                      onChange={handleProviderChange}
+                    />
+                  </div>
+                </div>
+                
+                <div className="form-group">
+                  <label htmlFor="photoUrl">Property Photo URL</label>
+                  <div className="input-wrapper">
+                    <span className="input-icon icon-photo"></span>
+                    <input
+                      id="photoUrl"
+                      name="photoUrl"
+                      type="url"
+                      placeholder="https://example.com/photo.jpg"
+                      value={providerData.photoUrl}
+                      onChange={handleProviderChange}
                     />
                   </div>
                 </div>
               </div>
             )}
-
-            <div className="form-group">
-              <label className="terms-agreement">
-                <input 
-                  type="checkbox" 
-                  checked={agreeToTerms}
-                  onChange={(e) => setAgreeToTerms(e.target.checked)}
-                  required
-                />
-                <span>
-                  I agree to the{" "}
-                  <Link to="/terms" className="terms-link">Terms of Service</Link>
-                  {" "}and{" "}
-                  <Link to="/privacy" className="terms-link">Privacy Policy</Link>
-                </span>
-              </label>
-            </div>
-
+            
             <button
               type="submit"
-              className={`register-btn ${isLoading ? "loading" : ""}`}
               disabled={isLoading}
+              className={`register-btn ${isLoading ? 'loading' : ''}`}
             >
-              {isLoading ? "Creating Account..." : "Create Account"}
+              {isLoading ? 'Creating your account...' : 'Create Account'}
             </button>
           </form>
-
+          
           <div className="register-footer">
             <p>
-              Already have an account?{" "}
-              <Link to="/login" className="signin-link">
+              Already have an account?{' '}
+              <button 
+                className="signin-link"
+                onClick={() => navigate('/login')}
+              >
                 Sign in here
-              </Link>
+              </button>
             </p>
           </div>
         </div>
       </div>
     </div>
   );
-};
+}
 
 export default Register;

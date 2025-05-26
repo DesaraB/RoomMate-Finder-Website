@@ -1,27 +1,43 @@
 const express = require("express");
+const cors = require("cors");
 const dotenv = require("dotenv");
 const sequelize = require("./config/database");
 const User = require("./models/User");
 const Home = require("./models/Home");
 const Interest = require("./models/Interest");
+const Listing = require("./models/Listing");
 
-// ⬇️ ADD THESE LINES TO IMPORT ROUTES
+// Import routes
 const userRoutes = require("./routes/userRoutes");
 const homeRoutes = require("./routes/homeRoutes");
 const interestRoutes = require("./routes/interestRoutes");
+const listingRoutes = require("./routes/listingRoutes");
 
 dotenv.config();
+
+// Create the app
 const app = express();
+
+// Add CORS
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+);
+
+// Middleware
 app.use(express.json());
 
-// ⬇️ ADD ROUTE MIDDLEWARES
+// Routes
 app.use("/api/users", userRoutes);
 app.use("/api/homes", homeRoutes);
 app.use("/api/interests", interestRoutes);
+app.use("/api/listings", listingRoutes);
 
 // Sync models
 sequelize
-  .sync({ alter: true }) // change to { force: true } to reset tables
+  .sync({ alter: true })
   .then(() => console.log("Database synced"))
   .catch((err) => console.error("Sync error:", err));
 

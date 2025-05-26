@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import "./listings.css";
 // eslint-disable-next-line
 const Listings = () => {

@@ -30,7 +30,7 @@ export const HeroBanner = () => {
                 </div>
               </div>
               <h3 className="hero__title">Need a roommate?</h3>
-              <Link to="/create-listing" className="hero__btn hero__btn--teal">
+              <Link to="/provider-registration" className="hero__btn hero__btn--teal">
                 List your room →
               </Link>
             </div>
@@ -50,7 +50,7 @@ export const HeroBanner = () => {
                 <div className="location-pin"></div>
               </div>
               <h3 className="hero__title">Looking for a place?</h3>
-              <Link to="/listings" className="hero__btn hero__btn--orange">
+              <Link to="/seeker-registration" className="hero__btn hero__btn--orange">
                 Create your profile →
               </Link>
             </div>
