@@ -1,38 +1,38 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import "./provider-registration.css"
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./provider-registration.css";
 
 function ProviderRegistration() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    name: '',
-    gender: '',
-    age: '',
-    phone_number: '',
-    description: '',
-    location: ''
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    name: "",
+    gender: "",
+    age: "",
+    phone_number: "",
+    description: "",
+    location: "",
   });
-  
+
   // Provider property fields
   const [propertyData, setPropertyData] = useState({
-    homeTitle: '',
-    homeDescription: '',
-    homeLocation: '',
-    homePrice: '',
-    bedrooms: '',
-    bathrooms: '',
-    propertyType: '',
-    availableFrom: '',
-    leaseTerm: '',
-    amenities: '',
-    photoUrl: ''
+    homeTitle: "",
+    homeDescription: "",
+    homeLocation: "",
+    homePrice: "",
+    bedrooms: "",
+    bathrooms: "",
+    propertyType: "",
+    availableFrom: "",
+    leaseTerm: "",
+    amenities: "",
+    photoUrl: "",
   });
-  
-  const [error, setError] = useState('');
+
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -42,7 +42,7 @@ function ProviderRegistration() {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value
+      [name]: value,
     });
   };
 
@@ -51,32 +51,45 @@ function ProviderRegistration() {
     const { name, value } = e.target;
     setPropertyData({
       ...propertyData,
-      [name]: value
+      [name]: value,
     });
   };
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setIsLoading(true);
 
     try {
       // Validate form
-      if (!formData.username || !formData.email || !formData.password || !formData.name || !formData.gender) {
-        setError('Please fill in all required fields');
+      if (
+        !formData.username ||
+        !formData.email ||
+        !formData.password ||
+        !formData.name ||
+        !formData.gender
+      ) {
+        setError("Please fill in all required fields");
         setIsLoading(false);
         return;
       }
 
-      if (!propertyData.homeTitle || !propertyData.homeLocation || !propertyData.homePrice || !propertyData.bedrooms || !propertyData.bathrooms || !propertyData.propertyType) {
-        setError('Please fill in all required property details');
+      if (
+        !propertyData.homeTitle ||
+        !propertyData.homeLocation ||
+        !propertyData.homePrice ||
+        !propertyData.bedrooms ||
+        !propertyData.bathrooms ||
+        !propertyData.propertyType
+      ) {
+        setError("Please fill in all required property details");
         setIsLoading(false);
         return;
       }
 
       if (formData.password !== formData.confirmPassword) {
-        setError('Passwords do not match');
+        setError("Passwords do not match");
         setIsLoading(false);
         return;
       }
@@ -84,47 +97,53 @@ function ProviderRegistration() {
       // Combine data for API request
       const userData = {
         ...formData,
-        role: 'provider',
+        role: "provider",
         homeData: {
           title: propertyData.homeTitle,
           description: propertyData.homeDescription,
           location: propertyData.homeLocation,
-          price: propertyData.homePrice ? parseFloat(propertyData.homePrice) : null,
-          bedrooms: propertyData.bedrooms ? parseInt(propertyData.bedrooms) : null,
-          bathrooms: propertyData.bathrooms ? parseFloat(propertyData.bathrooms) : null,
+          price: propertyData.homePrice
+            ? parseFloat(propertyData.homePrice)
+            : null,
+          bedrooms: propertyData.bedrooms
+            ? parseInt(propertyData.bedrooms)
+            : null,
+          bathrooms: propertyData.bathrooms
+            ? parseFloat(propertyData.bathrooms)
+            : null,
           property_type: propertyData.propertyType,
           available_from: propertyData.availableFrom || null,
           lease_term: propertyData.leaseTerm,
           amenities: propertyData.amenities,
-          photo_url: propertyData.photoUrl
-        }
+          photo_url: propertyData.photoUrl,
+        },
       };
 
       // Remove confirmPassword as it's not needed for the API
       delete userData.confirmPassword;
 
       // Send registration request to your backend
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(userData)
+        body: JSON.stringify(userData),
       });
 
       if (!response.ok) {
-        throw new Error('Registration failed');
+        throw new Error("Registration failed");
       }
 
       const result = await response.json();
-      
+
       // Store user data and redirect
-      localStorage.setItem('user', JSON.stringify(result));
-      
+      localStorage.setItem("user", JSON.stringify(result));
+
       // Redirect to provider dashboard
-      navigate('/provider-dashboard');
+      navigate("/provider-dashboard");
     } catch (err) {
-      setError(err.message || 'Registration failed. Please try again.');
+      setError(err.message || "Registration failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -140,15 +159,13 @@ function ProviderRegistration() {
             <p>Join as a room provider and start earning from your space</p>
           </div>
 
-          {error && (
-            <div className="error-message">{error}</div>
-          )}
-          
+          {error && <div className="error-message">{error}</div>}
+
           <form className="provider-registration-form" onSubmit={handleSubmit}>
             {/* Account Information */}
             <div className="form-section">
               <h3 className="section-title">Account Information</h3>
-              
+
               <div className="form-group">
                 <label htmlFor="username">Username *</label>
                 <div className="input-wrapper">
@@ -180,7 +197,7 @@ function ProviderRegistration() {
                   />
                 </div>
               </div>
-              
+
               <div className="password-row">
                 <div className="form-group">
                   <label htmlFor="password">Password *</label>
@@ -204,7 +221,7 @@ function ProviderRegistration() {
                     </button>
                   </div>
                 </div>
-                
+
                 <div className="form-group">
                   <label htmlFor="confirmPassword">Confirm Password *</label>
                   <div className="input-wrapper">
@@ -221,7 +238,9 @@ function ProviderRegistration() {
                     <button
                       type="button"
                       className="password-toggle"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
                     >
                       {showConfirmPassword ? "🙈" : "👁"}
                     </button>
@@ -229,11 +248,11 @@ function ProviderRegistration() {
                 </div>
               </div>
             </div>
-            
+
             {/* Personal Information */}
             <div className="form-section">
               <h3 className="section-title">Personal Information</h3>
-              
+
               <div className="form-group">
                 <label htmlFor="name">Full Name *</label>
                 <div className="input-wrapper">
@@ -249,7 +268,7 @@ function ProviderRegistration() {
                   />
                 </div>
               </div>
-              
+
               <div className="personal-row">
                 <div className="form-group">
                   <label htmlFor="gender">Gender *</label>
@@ -265,12 +284,10 @@ function ProviderRegistration() {
                       <option value="">Select gender</option>
                       <option value="male">Male</option>
                       <option value="female">Female</option>
-                      <option value="non-binary">Non-binary</option>
-                      <option value="prefer-not-to-say">Prefer not to say</option>
                     </select>
                   </div>
                 </div>
-                
+
                 <div className="form-group">
                   <label htmlFor="age">Age</label>
                   <div className="input-wrapper">
@@ -288,7 +305,7 @@ function ProviderRegistration() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="phone_number">Phone Number</label>
                 <div className="input-wrapper">
@@ -297,13 +314,13 @@ function ProviderRegistration() {
                     id="phone_number"
                     name="phone_number"
                     type="tel"
-                    placeholder="(555) 123-4567"
+                    placeholder="(355) 123-4567"
                     value={formData.phone_number}
                     onChange={handleChange}
                   />
                 </div>
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="location">Your Location</label>
                 <div className="input-wrapper">
@@ -318,7 +335,7 @@ function ProviderRegistration() {
                   />
                 </div>
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="description">About Me</label>
                 <div className="textarea-wrapper">
@@ -333,11 +350,11 @@ function ProviderRegistration() {
                 </div>
               </div>
             </div>
-            
+
             {/* Property Details */}
             <div className="form-section property-section">
               <h3 className="section-title">Your Property Details</h3>
-              
+
               <div className="form-group">
                 <label htmlFor="homeTitle">Property Title *</label>
                 <div className="input-wrapper">
@@ -353,7 +370,7 @@ function ProviderRegistration() {
                   />
                 </div>
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="homeDescription">Property Description</label>
                 <div className="textarea-wrapper">
@@ -367,7 +384,7 @@ function ProviderRegistration() {
                   />
                 </div>
               </div>
-              
+
               <div className="grid-row">
                 <div className="form-group">
                   <label htmlFor="homeLocation">Property Location *</label>
@@ -384,7 +401,7 @@ function ProviderRegistration() {
                     />
                   </div>
                 </div>
-                
+
                 <div className="form-group">
                   <label htmlFor="homePrice">Monthly Rent ($) *</label>
                   <div className="input-wrapper">
@@ -402,7 +419,7 @@ function ProviderRegistration() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="grid-row-3">
                 <div className="form-group">
                   <label htmlFor="bedrooms">Bedrooms *</label>
@@ -420,7 +437,7 @@ function ProviderRegistration() {
                     />
                   </div>
                 </div>
-                
+
                 <div className="form-group">
                   <label htmlFor="bathrooms">Bathrooms *</label>
                   <div className="input-wrapper">
@@ -438,7 +455,7 @@ function ProviderRegistration() {
                     />
                   </div>
                 </div>
-                
+
                 <div className="form-group">
                   <label htmlFor="propertyType">Property Type *</label>
                   <div className="input-wrapper">
@@ -454,14 +471,12 @@ function ProviderRegistration() {
                       <option value="apartment">Apartment</option>
                       <option value="house">House</option>
                       <option value="condo">Condo</option>
-                      <option value="townhouse">Townhouse</option>
                       <option value="studio">Studio</option>
-                      <option value="loft">Loft</option>
                     </select>
                   </div>
                 </div>
               </div>
-              
+
               <div className="grid-row">
                 <div className="form-group">
                   <label htmlFor="availableFrom">Available From</label>
@@ -476,7 +491,7 @@ function ProviderRegistration() {
                     />
                   </div>
                 </div>
-                
+
                 <div className="form-group">
                   <label htmlFor="leaseTerm">Lease Term</label>
                   <div className="input-wrapper">
@@ -497,7 +512,7 @@ function ProviderRegistration() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="amenities">Amenities & Features</label>
                 <div className="textarea-wrapper">
@@ -511,7 +526,7 @@ function ProviderRegistration() {
                   />
                 </div>
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="photoUrl">Property Photo URL</label>
                 <div className="input-wrapper">
@@ -527,19 +542,29 @@ function ProviderRegistration() {
                 </div>
               </div>
             </div>
-            
-            <button 
-              type="submit" 
-              className={`provider-register-btn ${isLoading ? 'loading' : ''}`}
+
+            <button
+              type="submit"
+              className={`provider-register-btn ${isLoading ? "loading" : ""}`}
               disabled={isLoading}
             >
-              {isLoading ? 'Creating Account...' : 'List My Room'}
+              {isLoading ? "Creating Account..." : "List My Room"}
             </button>
           </form>
-          
+
           <div className="provider-registration-footer">
-            <p>Already have an account? <a href="/login" className="signin-link">Sign in</a></p>
-            <p>Looking for a room instead? <a href="/seeker-registration" className="switch-link">Join as Seeker</a></p>
+            <p>
+              Already have an account?{" "}
+              <a href="/login" className="signin-link">
+                Sign in
+              </a>
+            </p>
+            <p>
+              Looking for a room instead?{" "}
+              <a href="/seeker-registration" className="switch-link">
+                Join as Seeker
+              </a>
+            </p>
           </div>
         </div>
       </div>

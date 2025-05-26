@@ -127,7 +127,6 @@ const Listings = () => {
         (listing) => listing.roomType === filters.roomType
       );
     }
-
     setFilteredListings(filtered);
   }, [filters]);
 

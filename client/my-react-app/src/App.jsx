@@ -10,6 +10,7 @@ import Listings from "./Pages/Listing/listings";
 import ProviderDashboard from "./Pages/ProviderDashboard/provider-dashboard.jsx";
 import SeekerDashboard from "./Pages/SeekerDashboard/seeker-dashboard.jsx";
 import ProviderRegistration from "./Pages/Provider-Registration/provider-registration.jsx";
+import SeekerRegistration from "./Pages/Seeker-Registration/seek-registration.jsx";
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
@@ -30,10 +31,8 @@ function App() {
           <Route path="/listings" element={<Listings />} />
           <Route path="/provider-dashboard" element={<ProviderDashboard />} />
           <Route path="/seeker-dashboard" element={<SeekerDashboard />} />
-          <Route
-            path="/provider-registration"
-            element={<ProviderRegistration />}
-          />
+          <Route path="/provider-registration" element={<ProviderRegistration />}/>
+          <Route path="/seeker-registration" element={<SeekerRegistration />}/>
           {/* Fallback for undefined routes */}
           <Route path="*" element={<h2>404: Page Not Found</h2>} />
         </Routes>
