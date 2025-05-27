@@ -8,6 +8,7 @@ router.post('/register', userController.createUser); // This matches the /api/us
 
 // Other user routes
 router.get('/', userController.getAllUsers);
+router.get('/checkAuthUser',userController.checkAuthUser);
 router.get('/:id', userController.getUserById);
 router.put('/:id', userController.updateUser);
 router.delete('/:id', userController.deleteUser);

@@ -1,6 +1,8 @@
 const bcrypt = require("bcryptjs");
 const User = require("../models/user");
 
+const jwt = require("jsonwebtoken");
+
 exports.createUser = async (req, res) => {
   try {
     const {
@@ -21,7 +23,15 @@ exports.createUser = async (req, res) => {
       description,
     } = req.body;
 
-    if (!name || !email || !password || !gender || !role || !dateOfBirth || !age) {
+    if (
+      !name ||
+      !email ||
+      !password ||
+      !gender ||
+      !role ||
+      !dateOfBirth ||
+      !age
+    ) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
@@ -49,7 +59,12 @@ exports.createUser = async (req, res) => {
       children: role === "seeker" ? children : null,
       description: role === "seeker" ? description : null,
     });
-
+    const token = jwt.sign({ id: newUser.id }, "your_jwt_secret", {
+      expiresIn: "7d", // optional
+    });
+    res.cookie("jwt", token, {
+      httpOnly: true,
+    });
     res.status(201).json(newUser);
   } catch (err) {
     console.error("Create user error:", err);
@@ -65,6 +80,15 @@ exports.getAllUsers = async (req, res) => {
   } catch (err) {
     console.error("Get all users error:", err);
     res.status(500).json({ error: err.message });
+  }
+};
+
+exports.checkAuthUser = async (req, res) => {
+  try {
+    res.status(200).json("user------");
+  } catch (error) {
+	console.log("error-----",error);
+    res.status(500).json({ error: error.message });
   }
 };
 

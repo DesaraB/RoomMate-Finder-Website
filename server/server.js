@@ -1,11 +1,13 @@
 const express = require("express");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 const dotenv = require("dotenv");
 const sequelize = require("./config/database");
 const User = require("./models/User");
 const Home = require("./models/Home");
 const Interest = require("./models/Interest");
 const Listing = require("./models/Listing");
+const authToken = require("./middleware/getAuthUser");
 
 // Import routes
 const userRoutes = require("./routes/userRoutes");
@@ -28,7 +30,8 @@ app.use(
 
 // Middleware
 app.use(express.json());
-
+app.use(cookieParser());
+app.use(authToken);
 // Routes
 app.use("/api/users", userRoutes);
 app.use("/api/homes", homeRoutes);
@@ -37,7 +40,7 @@ app.use("/api/listings", listingRoutes);
 
 // Sync models
 sequelize
-  .sync({ alter: true })
+  .sync({ force: true })
   .then(() => console.log("Database synced"))
   .catch((err) => console.error("Sync error:", err));
 
