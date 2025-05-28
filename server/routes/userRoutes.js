@@ -1,11 +1,9 @@
-// routes/userRoutes.js
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
 
 // Register user
 router.post('/register', userController.createUser); // This matches the /api/users/register route
-
 // Other user routes
 router.get('/', userController.getAllUsers);
 router.get('/checkAuthUser',userController.checkAuthUser);

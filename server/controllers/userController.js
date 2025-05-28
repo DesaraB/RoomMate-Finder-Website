@@ -1,7 +1,9 @@
 const bcrypt = require("bcryptjs");
 const User = require("../models/user");
+const HttpError = require("../errorHandler");
 
 const jwt = require("jsonwebtoken");
+const { Error } = require("sequelize");
 
 exports.createUser = async (req, res) => {
   try {
@@ -85,9 +87,14 @@ exports.getAllUsers = async (req, res) => {
 
 exports.checkAuthUser = async (req, res) => {
   try {
-    res.status(200).json("user------");
+    const authUser = await User.findOne({ where: { id: req.user.id } });
+    if (!authUser) {
+      throw new Error("User not found");
+    }
+    const { password, ...safeUser } = authUser.get({ plain: true });
+    res.status(200).json({ status: 200, user: safeUser });
   } catch (error) {
-	console.log("error-----",error);
+    console.log("error-----", error);
     res.status(500).json({ error: error.message });
   }
 };
@@ -96,6 +103,7 @@ exports.checkAuthUser = async (req, res) => {
 exports.getUserById = async (req, res) => {
   try {
     const user = await User.findByPk(req.params.id);
+    console.log("user---", req.user);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
