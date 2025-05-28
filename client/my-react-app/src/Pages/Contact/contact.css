@@ -57,7 +57,7 @@
   .form-group input,
   .form-group textarea {
 	width: 100%;
-	border: 1px solid #ddd;
+	border: 5px solid #ddd;
 	border-radius: 5px;
 	font-size: 16px;
   }
@@ -65,7 +65,6 @@
   .form-group input:focus,
   .form-group textarea:focus {
 	outline: none;
-	border-color: #4f46e5;
   }
   
   .submit-btn {

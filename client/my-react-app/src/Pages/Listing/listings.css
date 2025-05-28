@@ -139,15 +139,15 @@
 .price-tag {
   position: absolute;
   top: 1rem;
-  right: 1rem;
   background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
   color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
+  border-radius: 25px; /* slightly larger */
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 1.1rem; /* increased font size */
+  padding: 0.4rem 10rem; /* added padding for bigger size */
   box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
 }
+
 
 .listing-content {
   padding: 1.5rem;

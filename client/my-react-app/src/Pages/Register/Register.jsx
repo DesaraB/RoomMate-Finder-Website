@@ -332,8 +332,6 @@ function Register() {
                       <option value="">Select gender</option>
                       <option value="male">Male</option>
                       <option value="female">Female</option>
-                      <option value="non-binary">Non-binary</option>
-                      <option value="prefer-not-to-say">Prefer not to say</option>
                     </select>
                   </div>
                 </div>
@@ -364,7 +362,7 @@ function Register() {
                     id="phone_number"
                     name="phone_number"
                     type="tel"
-                    placeholder="(555) 123-4567"
+                    placeholder="(355) 123-4567"
                     value={formData.phone_number}
                     onChange={handleChange}
                   />
