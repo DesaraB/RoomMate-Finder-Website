@@ -4,20 +4,23 @@ import { Link } from "react-router-dom";
 import "./login.css";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [values, setValues] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [formError, setFormError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value);
-    setFormError(""); // Clear errors when user types
-  };
+  const handleChange = (event) => {
+    console.log("name", event.target.name);
+    console.log("values----", event.target.value);
 
-  const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
+    // const { name, value } = event.target;
+    // setValues((preState) => {
+    //   return {
+    //     ...preState,
+    //     [name]:value
+    //   };
+    // });
     setFormError(""); // Clear errors when user types
   };
 
@@ -26,7 +29,7 @@ const Login = () => {
     setFormError("");
     setIsLoading(true);
 
-    if (!email || !password) {
+    if (!values.email || !values.password) {
       setFormError("Please enter both email and password");
       setIsLoading(false);
       return;
@@ -34,7 +37,7 @@ const Login = () => {
 
     try {
       // Simulate login for now - replace with your actual API call
-      console.log("Login attempt:", { email, password });
+      console.log("Login attempt:", values);
 
       // For now, just simulate success
       setTimeout(() => {
@@ -70,8 +73,8 @@ const Login = () => {
                   type="email"
                   id="email"
                   name="email"
-                  value={email}
-                  onChange={handleEmailChange}
+                  value={values.email}
+                  onChange={handleChange}
                   placeholder="Enter your email"
                   required
                 />
@@ -86,8 +89,8 @@ const Login = () => {
                   type={showPassword ? "text" : "password"}
                   id="password"
                   name="password"
-                  value={password}
-                  onChange={handlePasswordChange}
+                  value={values.password}
+                  onChange={handleChange}
                   placeholder="Enter your password"
                   required
                 />
@@ -128,7 +131,6 @@ const Login = () => {
               </Link>
             </p>
           </div>
-
         </div>
       </div>
     </div>
