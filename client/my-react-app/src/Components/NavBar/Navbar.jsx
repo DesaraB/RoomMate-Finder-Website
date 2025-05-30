@@ -2,7 +2,12 @@ import React from "react";
 import { Link } from "react-router-dom";
 import "./nav-bar.css";
 
+import { useAuthContext } from "../../Context/AuthContext";
+
 export const Navbar = () => {
+  const { authUser } = useAuthContext();
+
+  console.log("authUser----",authUser);
   return (
     <nav className="navbar">
       <div className="logo">
@@ -23,7 +28,8 @@ export const Navbar = () => {
           <li>
             <Link to="/contact">Contact</Link>
           </li>
-          <li><Link to="/how it works">How It Works</Link>
+          <li>
+            <Link to="/how it works">How It Works</Link>
           </li>
         </ul>
       </div>
