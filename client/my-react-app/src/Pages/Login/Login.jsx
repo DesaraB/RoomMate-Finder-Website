@@ -1,9 +1,10 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { useAuthContext } from "../../Context/AuthContext";
+import { useNavigate, Link } from "react-router-dom";
 import "./login.css";
 
 const Login = () => {
+  const { authUser, loginUser } = useAuthContext();
   const [values, setValues] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [formError, setFormError] = useState("");
@@ -11,22 +12,17 @@ const Login = () => {
   const navigate = useNavigate();
 
   const handleChange = (event) => {
-    console.log("name", event.target.name);
-    console.log("values----", event.target.value);
-
-    // const { name, value } = event.target;
-    // setValues((preState) => {
-    //   return {
-    //     ...preState,
-    //     [name]:value
-    //   };
-    // });
-    setFormError(""); // Clear errors when user types
+    const { name, value } = event.target;
+    setValues((preState) => {
+      return {
+        ...preState,
+        [name]: value,
+      };
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setFormError("");
     setIsLoading(true);
 
     if (!values.email || !values.password) {
@@ -36,13 +32,13 @@ const Login = () => {
     }
 
     try {
-      // Simulate login for now - replace with your actual API call
-      console.log("Login attempt:", values);
-
-      // For now, just simulate success
+      const result = await loginUser(values);
       setTimeout(() => {
-        alert("Login successful!");
-        navigate("/dashboard");
+        if (result.role === "provider") {
+          navigate("/provider-dashboard");
+        } else if (result.role === "seeker") {
+          navigate("/seeker-dashboard");
+        }
         setIsLoading(false);
       }, 1000);
     } catch (error) {
@@ -76,7 +72,6 @@ const Login = () => {
                   value={values.email}
                   onChange={handleChange}
                   placeholder="Enter your email"
-                  required
                 />
               </div>
             </div>
@@ -92,7 +87,6 @@ const Login = () => {
                   value={values.password}
                   onChange={handleChange}
                   placeholder="Enter your password"
-                  required
                 />
                 <button
                   type="button"

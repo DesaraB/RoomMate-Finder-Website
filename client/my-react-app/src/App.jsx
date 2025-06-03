@@ -12,7 +12,7 @@ import SeekerDashboard from "./Pages/SeekerDashboard/seeker-dashboard.jsx";
 import ProviderRegistration from "./Pages/Provider-Registration/provider-registration.jsx";
 import SeekerRegistration from "./Pages/Seeker-Registration/seek-registration.jsx";
 
-import { AuthProvider } from "./Context/AuthContext";
+import { AuthProvider } from "./Context/AuthContext.js";
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 

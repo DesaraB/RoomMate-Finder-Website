@@ -1,13 +1,22 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import { Link ,useNavigate} from "react-router-dom";
+import { useAuthContext } from "../../Context/AuthContext";
 import "./nav-bar.css";
 
-import { useAuthContext } from "../../Context/AuthContext";
-
 export const Navbar = () => {
-  const { authUser } = useAuthContext();
+  const { authUser,logoutUser } = useAuthContext();
+  const navigate = useNavigate();
 
-  console.log("authUser----",authUser);
+  const handleLogout = async () => {
+     try{
+       const result = await logoutUser();
+      if(result.status === 200){
+        navigate('/')
+      }
+     }catch(error){
+      return error;
+     }
+  }
+
   return (
     <nav className="navbar">
       <div className="logo">
@@ -36,12 +45,23 @@ export const Navbar = () => {
 
       <div className="nav-right">
         <ul className="nav-links">
-          <li>
-            <Link to="/login">Login</Link>
-          </li>
-          <li>
-            <Link to="/register">Register</Link>
-          </li>
+          {authUser.name ? (
+            
+         <>
+            <li>
+               <Link onClick={handleLogout}>Logout</Link>
+            </li>
+         </>
+          ) : (
+            <>
+              <li>
+                <Link to="/login">Login</Link>
+              </li>
+              <li>
+                <Link to="/register">Register</Link>
+              </li>
+            </>
+          )}
         </ul>
       </div>
     </nav>

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./provider-dashboard.css";
 
 const ProviderDashboard = () => {
-  // Sample data for provider dashboard
+    // Sample data for provider dashboard
   const [providerData] = useState({
     name: "John Smith",
     profileImage:
@@ -95,7 +95,6 @@ const ProviderDashboard = () => {
         return "#6c757d";
     }
   };
-
   return (
     <div className="provider-dashboard">
       <div className="dashboard-container">
