@@ -3,6 +3,7 @@ import {
   login_user_service,
   checkAuth_user_service,
   logout_user_service,
+  sara_services,
 } from "../Services/auth";
 const AuthContext = createContext({});
 const AuthProvider = (props) => {
@@ -38,6 +39,7 @@ const AuthProvider = (props) => {
       }
       return result;
     } catch (error) {
+      console.log("error----", error);
       setAuthUser({});
       return error;
     }
@@ -56,7 +58,18 @@ const AuthProvider = (props) => {
     }
   };
 
-  const values = { authUser, loginUser,logoutUser };
+  const sara = async () => {
+    try {
+      const result = await sara_services();
+      if (result.status === 200) {
+        return result;
+      }
+    } catch (error) {
+      console.log("error");
+    }
+  };
+
+  const values = { authUser, loginUser, logoutUser ,sara};
 
   return (
     <AuthContext.Provider value={values}>{props.children}</AuthContext.Provider>

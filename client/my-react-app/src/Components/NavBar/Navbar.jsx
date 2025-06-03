@@ -17,6 +17,8 @@ export const Navbar = () => {
      }
   }
 
+  //console.log("authUser----",authUser)
+
   return (
     <nav className="navbar">
       <div className="logo">

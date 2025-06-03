@@ -9,7 +9,7 @@ const login_user_service = async (values) => {
 };
 
 const checkAuth_user_service = async () => {
-  const result = await axios.get("http://localhost:3001/api/users/checkAuth");
+  const result = await axios.get("http://localhost:3001/api/users/checkAuthUser");
   return result;
 };
 
@@ -18,4 +18,9 @@ const logout_user_service = async () => {
 	return result;
 }
 
-export { login_user_service, checkAuth_user_service,logout_user_service };
+const sara_services = async()=>{
+	const result = await axios.get("http://localhost:3001/api/users/sara");
+	return result;
+}
+
+export { login_user_service, checkAuth_user_service,logout_user_service , sara_services };
