@@ -94,12 +94,17 @@ exports.register = async (req, res) => {
       });
     }
 
-    // Generate JWT
-    const token = jwt.sign({ id: newUser.id }, "your_jwt_secret", {
-      expiresIn: "7d"
-    });
+    // ✅ Generate JWT with role included
+    const token = jwt.sign(
+      { id: newUser.id, role: newUser.role },
+      "your_jwt_secret",
+      { expiresIn: "7d" }
+    );
 
-    res.cookie("jwt", token, { httpOnly: true });
+    res.cookie("jwt", token, {
+      httpOnly: true,
+      sameSite: "Lax"
+    });
 
     const { password: _, ...safeUser } = newUser.get({ plain: true });
 
@@ -124,11 +129,17 @@ exports.login = async (req, res) => {
     const match = await bcrypt.compare(password, user.password);
     if (!match) throw new HttpError("Your password does not match", 401);
 
-    const token = jwt.sign({ id: user.id }, "your_jwt_secret", {
-      expiresIn: "7d"
-    });
+    // ✅ Include role in JWT
+    const token = jwt.sign(
+      { id: user.id, role: user.role },
+      "your_jwt_secret",
+      { expiresIn: "7d" }
+    );
 
-    res.cookie("jwt", token, { httpOnly: true });
+    res.cookie("jwt", token, {
+      httpOnly: true,
+      sameSite: "Lax"
+    });
 
     const { password: _, ...safeUser } = user.get({ plain: true });
 

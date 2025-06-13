@@ -32,7 +32,7 @@ const Application = sequelize.define(
   },
   {
     tableName: "applications",
-    timestamps: false,
+    timestamps: true,
   }
 );
 module.exports = Application;

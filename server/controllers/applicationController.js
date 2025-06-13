@@ -4,16 +4,25 @@ const { Application, Listing, User } = require("../models");
 exports.getApplicationsForSeeker = async (req, res) => {
   try {
     const seekerId = req.user.id;
+    console.log(req.user)
+
     const applications = await Application.findAll({
-      where: { seekerId },
+      where: { seeker_id: seekerId },
       include: [
         {
           model: Listing,
           as: "listing",
-          include: { model: User, as: "provider", attributes: ["id", "name", "email"] }
-        }
-      ]
+          include: {
+            model: User,
+            as: "provider",
+            attributes: ["id", "name", "email"],
+          },
+        },
+      ],
+      order: [["createdAt", "DESC"]],
     });
+
+    console.log("Applications for seeker:", applications); // ✅ Debug
     res.status(200).json(applications);
   } catch (error) {
     console.error("Error fetching applications:", error);
@@ -25,27 +34,44 @@ exports.getApplicationsForSeeker = async (req, res) => {
 exports.createApplication = async (req, res) => {
   try {
     const { listingId, message } = req.body;
-    const seekerId = req.user.id;
+    const seekerId = req.user.id; // 👍 seeker = user with role 'seeker'
+    const userRole = req.user.role;
 
     if (!listingId) {
       return res.status(400).json({ error: "listingId is required." });
     }
 
+    // Only seekers can apply
+    if (userRole !== "seeker") {
+      return res.status(403).json({
+        error: "Only seekers can apply to listings.",
+      });
+    }
+
+    // Prevent duplicate applications
+    const alreadyApplied = await Application.findOne({
+      where: { seeker_id: seekerId, listing_id: listingId },
+    });
+
+    if (alreadyApplied) {
+      return res.status(400).json({
+        error: "You have already applied to this listing.",
+      });
+    }
+
     const newApplication = await Application.create({
-      seekerId,
-      listingId,
+      seeker_id: seekerId,
+      listing_id: listingId,
       message,
-      status: "pending"
+      status: "pending",
     });
 
     res.status(201).json(newApplication);
   } catch (error) {
     console.error("Error creating application:", error.message);
-    console.error(error);
     res.status(500).json({ error: "Server error" });
   }
 };
-
 // 3️⃣ Delete an applicationac
 exports.deleteApplication = async (req, res) => {
   try {
@@ -53,7 +79,7 @@ exports.deleteApplication = async (req, res) => {
     const seekerId = req.user.id;
 
     const application = await Application.findOne({
-      where: { id, seekerId }
+      where: { id, seekerId },
     });
 
     if (!application) {
@@ -76,7 +102,7 @@ exports.updateApplication = async (req, res) => {
     const updates = req.body;
 
     const application = await Application.findOne({
-      where: { id, seekerId }
+      where: { id, seekerId },
     });
 
     if (!application) {
@@ -101,15 +127,19 @@ exports.getApplicationsForProvider = async (req, res) => {
           model: Listing,
           as: "listing",
           where: { provider_id: providerId },
-          include: { model: User, as: "provider", attributes: ["id", "name", "email"] }
+          include: {
+            model: User,
+            as: "provider",
+            attributes: ["id", "name", "email"],
+          },
         },
         {
           model: User,
           as: "seeker",
-          attributes: ["id", "name", "email", "profile_picture_url"]
-        }
+          attributes: ["id", "name", "email", "profile_picture_url"],
+        },
       ],
-      order: [["createdAt", "DESC"]]
+      order: [["createdAt", "DESC"]],
     });
     res.status(200).json(applications);
   } catch (error) {

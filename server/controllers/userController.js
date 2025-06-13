@@ -81,8 +81,16 @@ exports.deleteUser = async (req, res) => {
 exports.registerProvider = async (req, res) => {
   try {
     const {
-      username, email, password, name, gender, age,
-      phone_number, description, location, homeData
+      username,
+      email,
+      password,
+      name,
+      gender,
+      age,
+      phone_number,
+      description,
+      location,
+      homeData,
     } = req.body;
 
     if (!username || !email || !password || !name || !gender) {
@@ -109,7 +117,7 @@ exports.registerProvider = async (req, res) => {
       phone_number,
       description,
       location,
-      role: "provider"
+      role: "provider",
     });
 
     // Create listing for the provider
@@ -126,15 +134,17 @@ exports.registerProvider = async (req, res) => {
         available_from: homeData.available_from,
         lease_term: homeData.lease_term,
         amenities: homeData.amenities,
-        photo_url: homeData.photo_url
+        photo_url: homeData.photo_url,
       });
     }
 
     // Generate JWT token (optional)
-    const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, {
-      expiresIn: "1d"
-    });
-    res.cookie("token", token, { httpOnly: true });
+    const token = jwt.sign(
+      { id: newUser.id, role: newUser.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+    res.cookie("jwt", token, { httpOnly: true, sameSite: "Lax" });
 
     // Return the created user without the password
     const { password: _, ...userData } = newUser.toJSON();
