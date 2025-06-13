@@ -1,0 +1,98 @@
+
+.room-details-page {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 10px 40px rgba(139, 115, 85, 0.1);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  color: #6b5b47;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.room-image-section {
+  width: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.room-image {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  object-fit: cover;
+  box-shadow: 0 5px 15px rgba(139, 115, 85, 0.15);
+}
+
+.room-info-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.room-info-section h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #8b7355;
+  margin-bottom: 0.5rem;
+}
+
+.room-location {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  color: #a68b5b;
+}
+
+.room-meta p {
+  margin: 0.4rem 0;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.room-description {
+  margin-top: 2rem;
+}
+
+.room-description h4 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #8b7355;
+  margin-bottom: 0.5rem;
+}
+
+.apply-now-btn {
+  margin-top: 2rem;
+  background: linear-gradient(135deg, #8b7355 0%, #a68b5b 100%);
+  color: white;
+  border: none;
+  padding: 0.9rem 1.8rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.apply-now-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(139, 115, 85, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .room-details-page {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+  }
+
+  .room-info-section h2 {
+    font-size: 1.5rem;
+  }
+
+  .room-image {
+    height: 250px;
+  }
+}

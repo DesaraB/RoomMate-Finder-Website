@@ -17,7 +17,6 @@ const AuthProvider = (props) => {
   const loginUser = async (data) => {
     try {
       const result = await login_user_service(data);
-      //console.log("result--in AuthProvider--", result);
       if (result.data.status === 200) {
         setAuthUser(result.data.user);
         return result.data.user;
@@ -68,6 +67,8 @@ const AuthProvider = (props) => {
       console.log("error");
     }
   };
+
+  
 
   const values = { authUser, loginUser, logoutUser ,sara};
 

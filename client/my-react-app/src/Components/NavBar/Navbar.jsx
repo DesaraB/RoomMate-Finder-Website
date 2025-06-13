@@ -1,23 +1,21 @@
-import { Link ,useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuthContext } from "../../Context/AuthContext";
 import "./nav-bar.css";
 
 export const Navbar = () => {
-  const { authUser,logoutUser } = useAuthContext();
+  const { authUser, logoutUser } = useAuthContext();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-     try{
-       const result = await logoutUser();
-      if(result.status === 200){
-        navigate('/')
+    try {
+      const result = await logoutUser();
+      if (result.status === 200) {
+        navigate("/");
       }
-     }catch(error){
+    } catch (error) {
       return error;
-     }
-  }
-
-  //console.log("authUser----",authUser)
+    }
+  };
 
   return (
     <nav className="navbar">
@@ -48,12 +46,23 @@ export const Navbar = () => {
       <div className="nav-right">
         <ul className="nav-links">
           {authUser.name ? (
-            
-         <>
-            <li>
-               <Link onClick={handleLogout}>Logout</Link>
-            </li>
-         </>
+            <>
+              <li>
+                <Link onClick={handleLogout}>Logout</Link>
+              </li>
+              {authUser.role === "seeker" && (
+                <li>
+                  <Link to="/seeker-dashboard">Seeker Dashboard</Link>
+                </li>
+                
+              )}
+              {authUser.role === "provider" && (
+                <li>
+                  <Link to="/provider-dashboard">Provider Dashboard</Link>
+                </li>
+                
+              )}
+            </>
           ) : (
             <>
               <li>

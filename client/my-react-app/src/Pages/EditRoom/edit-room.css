@@ -1,0 +1,131 @@
+/* edit-room.css */
+.edit-room-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.edit-room-container h2 {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 1.8rem;
+  font-weight: 600;
+  font-size: 1.8rem;
+}
+
+.edit-room-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.edit-room-form input,
+.edit-room-form textarea,
+.edit-room-form select {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background-color: #f9f9f9;
+}
+
+.edit-room-form input:focus,
+.edit-room-form textarea:focus,
+.edit-room-form select:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+  background-color: #fff;
+}
+
+.edit-room-form textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.edit-room-form select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1em;
+}
+
+.edit-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.save-btn, .delete-btn {
+  padding: 12px 30px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.save-btn {
+  background-color: #4caf50;
+  color: white;
+}
+
+.save-btn:hover {
+  background-color: #43a047;
+  transform: translateY(-2px);
+}
+
+.delete-btn {
+  background-color: #f5f5f5;
+  color: #e53935;
+  border: 1px solid #e0e0e0;
+}
+
+.delete-btn:hover {
+  background-color: #ffebee;
+  transform: translateY(-2px);
+}
+
+.loading {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .edit-room-container {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+  
+  .edit-actions {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+  
+  .save-btn, .delete-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .edit-room-form {
+    grid-template-columns: 1fr;
+  }
+  
+  .edit-room-container h2 {
+    font-size: 1.5rem;
+  }
+}

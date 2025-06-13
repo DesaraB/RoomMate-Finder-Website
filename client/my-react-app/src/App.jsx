@@ -11,8 +11,12 @@ import ProviderDashboard from "./Pages/ProviderDashboard/provider-dashboard.jsx"
 import SeekerDashboard from "./Pages/SeekerDashboard/seeker-dashboard.jsx";
 import ProviderRegistration from "./Pages/Provider-Registration/provider-registration.jsx";
 import SeekerRegistration from "./Pages/Seeker-Registration/seek-registration.jsx";
+import Room from "./Pages/Room";
+import UpdateProfile from "./Pages/UpdateProfile/UpdateProfile.jsx";
 
 import { AuthProvider } from "./Context/AuthContext.js";
+import { RoomProvider } from "./Context/RoomContext.js";
+import EditRoom from "./Pages/EditRoom/EditRoom.jsx";
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
@@ -20,32 +24,42 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        {/* Persistent navigation bar across all routes */}
-        <Navbar />
-        <main>
-          <Routes>
-            {/* Define route paths and corresponding components */}
-            <Route path="/" element={<HomePage />} />
-            <Route path="/about-us" element={<AboutUs />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/how it works" element={<HowItWorks />} />
-            <Route path="/listings" element={<Listings />} />
-            <Route path="/provider-dashboard" element={<ProviderDashboard />} />
-            <Route path="/seeker-dashboard" element={<SeekerDashboard />} />
-            <Route
-              path="/provider-registration"
-              element={<ProviderRegistration />}
-            />
-            <Route
-              path="/seeker-registration"
-              element={<SeekerRegistration />}
-            />
-            {/* Fallback for undefined routes */}
-            <Route path="*" element={<h2>404: Page Not Found</h2>} />
-          </Routes>
-        </main>
+        <RoomProvider>
+          {/* Persistent navigation bar across all routes */}
+          <Navbar />
+          <main>
+            <Routes>
+              {/* Define route paths and corresponding components */}
+              <Route path="/" element={<HomePage />} />
+              <Route path="/about-us" element={<AboutUs />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/how it works" element={<HowItWorks />} />
+              <Route path="/listings" element={<Listings />} />
+              <Route
+                path="/provider-dashboard"
+                element={<ProviderDashboard />}
+              />
+              <Route path="/update-profile" element={<UpdateProfile />} />
+              <Route path="/seeker-dashboard" element={<SeekerDashboard />} />
+              <Route path="/view-room/:id" element={<Room />} />
+              <Route path="/edit-room/:id" element={<EditRoom />} />
+
+              <Route
+                path="/provider-registration"
+                element={<ProviderRegistration />}
+              />
+              <Route
+                path="/seeker-registration"
+                element={<SeekerRegistration />}
+              />
+
+              {/* Fallback for undefined routes */}
+              <Route path="*" element={<h2>404: Page Not Found</h2>} />
+            </Routes>
+          </main>
+        </RoomProvider>
       </AuthProvider>
     </Router>
   );

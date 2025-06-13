@@ -9,18 +9,23 @@ const login_user_service = async (values) => {
 };
 
 const checkAuth_user_service = async () => {
-  const result = await axios.get("http://localhost:3001/api/users/checkAuthUser");
+  const result = await axios.get("http://localhost:3001/api/users/checkAuth");
   return result;
 };
 
 const logout_user_service = async () => {
-	const result = await axios.post("http://localhost:3001/api/users/logout");
-	return result;
-}
+  const result = await axios.post("http://localhost:3001/api/users/logout");
+  return result;
+};
 
-const sara_services = async()=>{
-	const result = await axios.get("http://localhost:3001/api/users/sara");
-	return result;
-}
+const sara_services = async () => {
+  const result = await axios.get("http://localhost:3001/api/users/sara");
+  return result;
+};
 
-export { login_user_service, checkAuth_user_service,logout_user_service , sara_services };
+export {
+  login_user_service,
+  checkAuth_user_service,
+  logout_user_service,
+  sara_services,
+};

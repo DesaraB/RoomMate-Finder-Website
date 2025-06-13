@@ -294,3 +294,62 @@
     text-align: center;
   }
 }
+.add-room-form {
+  margin-top: 1rem;
+  padding: 1.5rem;
+  background: #fafaf9;
+  border-radius: 15px;
+  border: 1px solid rgba(139, 115, 85, 0.15);
+  box-shadow: 0 5px 20px rgba(139, 115, 85, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.add-room-form input,
+.add-room-form select,
+.add-room-form textarea {
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #d4c4b4;
+  font-size: 1rem;
+  color: #6b5b47;
+  background: #fffdfb;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.add-room-form input:focus,
+.add-room-form select:focus,
+.add-room-form textarea:focus {
+  outline: none;
+  border-color: #a68b5b;
+  box-shadow: 0 0 5px rgba(166, 139, 91, 0.3);
+}
+
+.add-room-form textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.add-room-form select {
+  background-color: white;
+}
+
+.add-room-form button[type="submit"] {
+  background: linear-gradient(135deg, #8b7355 0%, #a68b5b 100%);
+  color: white;
+  border: none;
+  padding: 0.8rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: all 0.3s ease;
+}
+
+.add-room-form button[type="submit"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(139, 115, 85, 0.3);
+}

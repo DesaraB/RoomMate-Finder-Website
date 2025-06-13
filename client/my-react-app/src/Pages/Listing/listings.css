@@ -247,3 +247,51 @@
     padding: 1.5rem;
   }
 }
+
+/* Save, View, Apply, Remove Button Styles */
+.listing-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.save-btn,
+.view-btn,
+.apply-btn,
+.unsave-btn {
+  background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.save-btn:disabled {
+  background: #ccc;
+  color: #444;
+  cursor: not-allowed;
+}
+
+.save-btn:hover:not(:disabled),
+.view-btn:hover,
+.apply-btn:hover,
+.unsave-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+.unsave-btn {
+  background: #dc3545;
+}
+
+.view-btn {
+  background: #6c757d;
+}
+
+.apply-btn {
+  background: #28a745;
+}
