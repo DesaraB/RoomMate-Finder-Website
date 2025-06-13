@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./listings.css";
 import { useNavigate } from "react-router-dom";
+import { useAuthContext } from "../../Context/AuthContext";
 
 const Listings = () => {
   const [listings, setListings] = useState([]);
   const navigate = useNavigate();
+  const { authUser } = useAuthContext();
 
   useEffect(() => {
     fetchListings();
@@ -19,6 +21,25 @@ const Listings = () => {
       setListings(res.data);
     } catch (error) {
       console.error("Error fetching listings", error);
+    }
+  };
+
+  const handleApply = async (listingId) => {
+    try {
+      const res = await axios.post(
+        "http://localhost:3001/api/applications",
+        { listingId },
+        { withCredentials: true }
+      );
+
+      if (res.status === 201) {
+        alert("Application submitted successfully!");
+      }
+    } catch (error) {
+      console.error("Error applying to listing:", error);
+      alert(
+        "You may have already applied, or you're not logged in as a seeker."
+      );
     }
   };
 
@@ -67,12 +88,14 @@ const Listings = () => {
                     >
                       View Details →
                     </button>
-                    <button
-                      className="apply-btn"
-                      onClick={() => navigate(`/view-room/${listing.id}`)}
-                    >
-                      Apply
-                    </button>
+                    {authUser.role === "seeker" && (
+                      <button
+                        className="apply-btn"
+                        onClick={() => handleApply(listing.id)}
+                      >
+                        Apply
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>

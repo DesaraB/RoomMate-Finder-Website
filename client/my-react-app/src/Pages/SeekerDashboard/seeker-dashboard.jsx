@@ -120,7 +120,7 @@ const SeekerDashboard = () => {
                       <p>${application.listing?.price}/month</p>
                       <small>
                         Applied on{" "}
-                        {new Date(application.created_at).toLocaleDateString()}{" "}
+                        {new Date(application.createdAt).toLocaleDateString()}{" "}
                         • Provider: {application.listing?.provider?.name}
                       </small>
                     </div>
