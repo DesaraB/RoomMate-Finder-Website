@@ -7,21 +7,19 @@ const authToken = require("./middleware/getAuthUser");
 
 // Import routes
 const userRoutes = require("./routes/userRoutes");
-const homeRoutes = require("./routes/homeRoutes");
-const interestRoutes = require("./routes/interestRoutes");
 const listingRoutes = require("./routes/listingRoutes");
-
 const publicRoutes = require("./routes/publicRoutes");
+const applicationRoutes = require("./routes/applicationRoutes");
 
 dotenv.config();
 
-// Create the app
 const app = express();
 
-// Add CORS
+// CORS setup
 app.use(
   cors({
     origin: "http://localhost:3000",
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     credentials: true,
   })
 );
@@ -29,20 +27,24 @@ app.use(
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
-app.use("/api/users",publicRoutes);
 
+// ✅ Public routes (no auth required)
+app.use("/api/users", publicRoutes);
+
+// 🔐 Auth middleware for private routes
 app.use(authToken);
-// Routes
-app.use("/api/users", userRoutes);
-app.use("/api/homes", homeRoutes);
-app.use("/api/interests", interestRoutes);
-app.use("/api/listings", listingRoutes);
 
-// Sync models
+// ✅ Private routes
+app.use("/api/users", userRoutes);
+app.use("/api/listings", listingRoutes);
+app.use("/api/applications", applicationRoutes);
+
+// Sequelize sync
 sequelize
   .sync()
   .then(() => console.log("Database synced"))
   .catch((err) => console.error("Sync error:", err));
 
+// Start server
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

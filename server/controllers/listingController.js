@@ -1,48 +1,76 @@
-import { storage } from '../storage.js';
+const { Listing, User } = require("../models");
 
-export const getAllListings = async (req, res) => {
+// Get all listings
+const getAllListings = async (req, res) => {
   try {
-    const listings = await storage.getAllListings();
+    const listings = await Listing.findAll({
+      include: [
+        {
+          model: User,
+          as: "provider",
+          attributes: ["id", "name", "profile_picture_url"],
+        },
+      ],
+    });
     res.status(200).json(listings);
   } catch (error) {
-    console.error('Error getting listings:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Error getting listings:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
-export const getListingById = async (req, res) => {
+// Get listing by ID
+const getListingById = async (req, res) => {
   try {
     const listingId = parseInt(req.params.id);
-    const listing = await storage.getListing(listingId);
-    
+    const listing = await Listing.findOne({
+      where: { id: listingId },
+      include: [
+        {
+          model: User,
+          as: "provider",
+          attributes: ["id", "name", "profile_picture_url"],
+        },
+      ],
+    });
+
     if (!listing) {
-      return res.status(404).json({ message: 'Listing not found' });
+      return res.status(404).json({ message: "Listing not found" });
     }
-    
+
     res.status(200).json(listing);
   } catch (error) {
-    console.error('Error getting listing:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Error getting listing:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
-export const getListingsByUser = async (req, res) => {
+// Get listings by provider user ID
+const getListingsByUser = async (req, res) => {
   try {
-    const userId = parseInt(req.params.userId);
-    const listings = await storage.getListingsByUser(userId);
+    const userId = parseInt(req.params.providerId);
+    console.log(userId);
+    const listings = await Listing.findAll({
+      where: { provider_id: userId },
+      include: [
+        {
+          model: User,
+          as: "provider",
+          attributes: ["id", "name", "profile_picture_url"],
+        },
+      ],
+    });
     res.status(200).json(listings);
   } catch (error) {
-    console.error('Error getting user listings:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Error getting user listings:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
-export const createListing = async (req, res) => {
+// Create new listing
+const createListing = async (req, res) => {
   try {
-    const { provider_id, title, description, location, price, bedrooms, 
-            bathrooms, property_type, amenities, available_from, lease_term, photo_url } = req.body;
-    
-    const newListing = await storage.createListing({
+    const {
       provider_id,
       title,
       description,
@@ -54,45 +82,76 @@ export const createListing = async (req, res) => {
       amenities,
       available_from,
       lease_term,
-      photo_url
+      photo_url,
+    } = req.body;
+
+    const newListing = await Listing.create({
+      provider_id,
+      title,
+      description,
+      location,
+      price,
+      bedrooms,
+      bathrooms,
+      property_type,
+      amenities,
+      available_from,
+      lease_term,
+      photo_url,
     });
-    
+
     res.status(201).json(newListing);
   } catch (error) {
-    console.error('Error creating listing:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Error creating listing:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
-export const updateListing = async (req, res) => {
+// Update listing
+const updateListing = async (req, res) => {
   try {
     const listingId = parseInt(req.params.id);
     const updates = req.body;
-    
-    const updatedListing = await storage.updateListing(listingId, updates);
-    if (!updatedListing) {
-      return res.status(404).json({ message: 'Listing not found' });
+
+    const [updatedRows] = await Listing.update(updates, {
+      where: { id: listingId },
+    });
+
+    if (updatedRows === 0) {
+      return res.status(404).json({ message: "Listing not found" });
     }
-    
+
+    const updatedListing = await Listing.findByPk(listingId);
     res.status(200).json(updatedListing);
   } catch (error) {
-    console.error('Error updating listing:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Error updating listing:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
-export const deleteListing = async (req, res) => {
+// Delete listing
+const deleteListing = async (req, res) => {
   try {
     const listingId = parseInt(req.params.id);
-    
-    const success = await storage.deleteListing(listingId);
-    if (!success) {
-      return res.status(404).json({ message: 'Listing not found' });
+    const deletedRows = await Listing.destroy({ where: { id: listingId } });
+
+    if (deletedRows === 0) {
+      return res.status(404).json({ message: "Listing not found" });
     }
-    
+
     res.status(204).send();
   } catch (error) {
-    console.error('Error deleting listing:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Error deleting listing:", error);
+    res.status(500).json({ message: "Server error" });
   }
+};
+
+// Export all handlers
+module.exports = {
+  getAllListings,
+  getListingById,
+  getListingsByUser,
+  createListing,
+  updateListing,
+  deleteListing,
 };
