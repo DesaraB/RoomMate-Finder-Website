@@ -13,6 +13,7 @@ import ProviderRegistration from "./Pages/Provider-Registration/provider-registr
 import SeekerRegistration from "./Pages/Seeker-Registration/seek-registration.jsx";
 import Room from "./Pages/Room";
 import UpdateProfile from "./Pages/UpdateProfile/UpdateProfile.jsx";
+import SeekerProfile from "./Pages/SeekerProfile/SeekerProfile.jsx"
 
 import { AuthProvider } from "./Context/AuthContext.js";
 import { RoomProvider } from "./Context/RoomContext.js";
@@ -45,6 +46,8 @@ function App() {
               <Route path="/seeker-dashboard" element={<SeekerDashboard />} />
               <Route path="/view-room/:id" element={<Room />} />
               <Route path="/edit-room/:id" element={<EditRoom />} />
+              <Route path="/seeker/:seekerId" element={<SeekerProfile />} />
+
 
               <Route
                 path="/provider-registration"

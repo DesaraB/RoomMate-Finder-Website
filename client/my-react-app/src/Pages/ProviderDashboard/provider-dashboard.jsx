@@ -99,6 +99,10 @@ const ProviderDashboard = () => {
     navigate(`/edit-room/${listing.id}`);
   };
 
+  const handleViewSeekerProfile = (seekerId) => {
+    navigate(`/seeker/${seekerId}`);
+  };
+
   return (
     <div className="provider-dashboard">
       <div className="dashboard-container">
@@ -252,7 +256,14 @@ const ProviderDashboard = () => {
                       className="seeker-image"
                     />
                     <div className="application-info">
-                      <h4>{app.seeker?.name}</h4>
+                      <h4
+                        onClick={() => handleViewSeekerProfile(app.seeker?.id)}
+                        style={{
+                          cursor: "pointer",
+                        }}
+                      >
+                        {app.seeker?.name}
+                      </h4>
                       <p>{app.listing?.title}</p>
                       <small>
                         Applied on {new Date(app.createdAt).toLocaleDateString()} • Status: {app.status}

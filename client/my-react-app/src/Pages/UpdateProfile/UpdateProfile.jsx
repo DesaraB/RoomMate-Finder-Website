@@ -4,7 +4,7 @@ import axios from "axios";
 import "./updateprofile.css";
 
 const UpdateProfile = () => {
-  const { authUser, setTrigger } = useAuthContext(); // trigger to refresh auth
+  const { authUser, setTrigger, logoutUser } = useAuthContext();
   const [formData, setFormData] = useState({
     name: authUser.name || "",
     email: authUser.email || "",
@@ -14,6 +14,8 @@ const UpdateProfile = () => {
     location: authUser.location || "",
     description: authUser.description || "",
   });
+
+  const [showModal, setShowModal] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -27,10 +29,24 @@ const UpdateProfile = () => {
         withCredentials: true,
       });
       alert("Profile updated successfully!");
-      setTrigger((prev) => !prev); // Refresh user context
+      setTrigger((prev) => !prev);
     } catch (error) {
       console.error("Error updating profile", error);
       alert("Failed to update profile.");
+    }
+  };
+
+  const confirmDeleteAccount = async () => {
+    try {
+      await axios.delete(`http://localhost:3001/api/users/${authUser.id}`, {
+        withCredentials: true,
+      });
+      alert("Your account has been deleted.");
+      logoutUser();
+      window.location.href = "/";
+    } catch (error) {
+      console.error("Error deleting account", error);
+      alert("Something went wrong while deleting your account.");
     }
   };
 
@@ -69,6 +85,24 @@ const UpdateProfile = () => {
         />
         <button type="submit">Update Profile</button>
       </form>
+
+      <button className="delete-account-btn" onClick={() => setShowModal(true)}>
+        🗑️ Delete My Account
+      </button>
+
+      {showModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>Are you sure you want to delete your account?</h3>
+            <div className="modal-buttons">
+              <button onClick={() => setShowModal(false)}>Cancel</button>
+              <button className="confirm-btn" onClick={confirmDeleteAccount}>
+                Yes, Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
