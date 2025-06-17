@@ -59,3 +59,103 @@
   color: #421cc9;
   transition: all 0.3s ease;
 }
+
+/* Hamburger styles */
+.hamburger-container {
+  position: relative;
+}
+
+.hamburger-btn {
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  color: white;
+  cursor: pointer;
+}
+
+.hamburger-dropdown {
+  position: absolute;
+  top: 2.5rem;
+  right: 0;
+  background-color: #252314;
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.hamburger-dropdown button {
+  background: none;
+  border: none;
+  color: white;
+  padding: 0.5rem 0;
+  text-align: left;
+  cursor: pointer;
+  font-size: small;
+}
+
+.hamburger-dropdown button:hover {
+  color: #ffdb70;
+}
+.hamburger-container {
+  position: relative;
+}
+
+.hamburger-btn {
+  font-size: 1.8rem;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 5px 10px;
+  transition: transform 0.2s ease;
+}
+
+.hamburger-btn:hover {
+  transform: scale(1.1);
+  color: #ffdd57;
+}
+
+.hamburger-dropdown {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background-color: #252314;
+  border-radius: 12px;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+  z-index: 999;
+  animation: dropdownFade 0.25s ease-out;
+}
+
+.hamburger-dropdown button {
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+  color: #ffffff;
+}
+
+.hamburger-dropdown button:hover {
+  background-color: #8d626d;
+  color: #ffffff;
+}
+
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
