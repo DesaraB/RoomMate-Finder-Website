@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import "./provider-dashboard.css";
 import { useAuthContext } from "../../Context/AuthContext";
@@ -25,26 +25,24 @@ const ProviderDashboard = () => {
   const [listings, setListings] = useState([]);
   const [applications, setApplications] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [listingBeingEdited, setListingBeingEdited] = useState(null);
 
-  const fetchListings = async () => {
+  const fetchListings = useCallback(async () => {
     try {
       const response = await axios.get(
         `http://localhost:3001/api/listings/provider/${authUser.id}`,
         { withCredentials: true }
       );
       setListings(response.data);
-      console.log("Fetched provider listings:", response.data);
     } catch (error) {
       console.error("Error fetching listings:", error);
     }
-  };
+  }, [authUser.id]);
 
   useEffect(() => {
     if (authUser?.id) {
       fetchListings();
     }
-  }, [authUser?.id, showAddForm]);
+  }, [authUser?.id, fetchListings, showAddForm]);
 
   useEffect(() => {
     const fetchApplications = async () => {
@@ -67,11 +65,10 @@ const ProviderDashboard = () => {
   const getStatusColor = (status) => {
     switch (status) {
       case "active":
+      case "accepted":
         return "#28a745";
       case "pending":
         return "#ffc107";
-      case "accepted":
-        return "#28a745";
       case "declined":
         return "#dc3545";
       case "draft":
@@ -99,14 +96,12 @@ const ProviderDashboard = () => {
   };
 
   const handleEdit = (listing) => {
-    setListingBeingEdited(listing);
     navigate(`/edit-room/${listing.id}`);
   };
 
   return (
     <div className="provider-dashboard">
       <div className="dashboard-container">
-        {/* Header */}
         <div className="dashboard-header">
           <div className="welcome-section">
             <img
@@ -121,7 +116,6 @@ const ProviderDashboard = () => {
           </div>
         </div>
 
-        {/* Main Content Grid */}
         <div className="dashboard-grid">
           {/* My Listings */}
           <div className="dashboard-card">
@@ -181,32 +175,11 @@ const ProviderDashboard = () => {
                 }}
               >
                 <input name="title" placeholder="Room Title" required />
-                <textarea
-                  name="description"
-                  placeholder="Description"
-                  required
-                />
+                <textarea name="description" placeholder="Description" required />
                 <input name="location" placeholder="Location" required />
-                <input
-                  name="price"
-                  type="number"
-                  placeholder="Price"
-                  step="0.01"
-                  required
-                />
-                <input
-                  name="bedrooms"
-                  type="number"
-                  placeholder="Bedrooms"
-                  required
-                />
-                <input
-                  name="bathrooms"
-                  type="number"
-                  step="0.5"
-                  placeholder="Bathrooms"
-                  required
-                />
+                <input name="price" type="number" placeholder="Price" step="0.01" required />
+                <input name="bedrooms" type="number" placeholder="Bedrooms" required />
+                <input name="bathrooms" type="number" step="0.5" placeholder="Bathrooms" required />
                 <select name="property_type" required>
                   <option value="">Select Property Type</option>
                   <option value="apartment">Apartment</option>
@@ -214,10 +187,7 @@ const ProviderDashboard = () => {
                   <option value="condo">Condo</option>
                   <option value="studio">Studio</option>
                 </select>
-                <input
-                  name="amenities"
-                  placeholder="Amenities (comma separated)"
-                />
+                <input name="amenities" placeholder="Amenities (comma separated)" />
                 <input name="available_from" type="date" required />
                 <input name="lease_term" placeholder="Lease Term" />
                 <input name="photo_url" placeholder="Photo URL" />
@@ -232,9 +202,7 @@ const ProviderDashboard = () => {
                 listings.map((listing) => (
                   <div key={listing.id} className="listing-item">
                     <img
-                      src={
-                        listing.photo_url || "https://via.placeholder.com/300"
-                      }
+                      src={listing.photo_url || "https://via.placeholder.com/300"}
                       alt={listing.title}
                       className="listing-image"
                     />
@@ -243,9 +211,7 @@ const ProviderDashboard = () => {
                       <p>${listing.price}/month</p>
                       <div className="listing-stats">
                         <span>{listing.views || 0} views</span>
-                        <span>
-                          {listing.applications?.length || 0} applications
-                        </span>
+                        <span>{listing.applications?.length || 0} applications</span>
                       </div>
                     </div>
                     <div className="listing-status">
@@ -255,10 +221,7 @@ const ProviderDashboard = () => {
                       >
                         active
                       </span>
-                      <button
-                        className="edit-btn"
-                        onClick={() => handleEdit(listing)}
-                      >
+                      <button className="edit-btn" onClick={() => handleEdit(listing)}>
                         Edit
                       </button>
                     </div>

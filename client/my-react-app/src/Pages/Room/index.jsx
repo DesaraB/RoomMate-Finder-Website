@@ -10,37 +10,34 @@ const Room = () => {
   const [loading, setLoading] = useState(true);
   const [applied, setApplied] = useState(false);
 
- useEffect(() => {
-  const load = async () => {
-    await loadRoomById(id);
-  };
-  load();
-}, [id])
-
-  const loadRoomById = async (listingId) => {
-    try {
-      const result = await roomById(listingId);
-      if (result) {
-        setRoom(result);
+  useEffect(() => {
+    const loadRoomById = async () => {
+      try {
+        const result = await roomById(id);
+        if (result) {
+          setRoom(result);
+        }
+      } catch (error) {
+        console.log("error---loadRoomById-", error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.log("error---loadRoomById-", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+
+    loadRoomById();
+  }, [id, roomById]);
 
   const handleApply = async () => {
     try {
       const response = await fetch("http://localhost:5000/api/applications", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        credentials: "include", // Include JWT cookiea
+        credentials: "include",
         body: JSON.stringify({
-          listingId: room.id
-        })
+          listingId: room.id,
+        }),
       });
 
       const data = await response.json();
@@ -62,7 +59,11 @@ const Room = () => {
   return (
     <div className="room-details-container">
       <div className="room-image-wrapper">
-        <img src={room.photo_url || "https://via.placeholder.com/600x400"} alt={room.title} className="room-image" />
+        <img
+          src={room.photo_url || "https://via.placeholder.com/600x400"}
+          alt={room.title}
+          className="room-image"
+        />
       </div>
       <div className="room-content">
         <h1 className="room-title">{room.title}</h1>

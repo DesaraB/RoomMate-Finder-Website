@@ -79,6 +79,28 @@ const SeekerDashboard = () => {
     }
   };
 
+  const handleApply = async (listingId, interestId) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:3001/api/applications",
+        { listingId },
+        { withCredentials: true }
+      );
+
+      if (response.status === 201) {
+        await axios.delete(
+          `http://localhost:3001/api/interests/${interestId}`,
+          { withCredentials: true }
+        );
+
+        setSavedRooms((prev) => prev.filter((room) => room.id !== interestId));
+        setMyApplications((prev) => [...prev, response.data]);
+      }
+    } catch (error) {
+      console.error("Error applying to room:", error.response?.data || error);
+    }
+  };
+
   return (
     <div className="seeker-dashboard">
       <div className="dashboard-container">
@@ -120,8 +142,8 @@ const SeekerDashboard = () => {
                       <p>${application.listing?.price}/month</p>
                       <small>
                         Applied on{" "}
-                        {new Date(application.createdAt).toLocaleDateString()}{" "}
-                        • Provider: {application.listing?.provider?.name}
+                        {new Date(application.createdAt).toLocaleDateString()} • Provider:{" "}
+                        {application.listing?.provider?.name}
                       </small>
                     </div>
                     <div className="application-status">
@@ -175,7 +197,14 @@ const SeekerDashboard = () => {
                       >
                         View
                       </button>
-                      <button className="apply-btn">Apply</button>
+                      <button
+                        className="apply-btn"
+                        onClick={() =>
+                          handleApply(room.listing?.id, room.id)
+                        }
+                      >
+                        Apply
+                      </button>
                       <button
                         className="unsave-btn"
                         onClick={() => handleUnsave(room.id)}
