@@ -5,14 +5,17 @@ import "./updateprofile.css";
 
 const UpdateProfile = () => {
   const { authUser, setTrigger, logoutUser } = useAuthContext();
+
   const [formData, setFormData] = useState({
     name: authUser.name || "",
     email: authUser.email || "",
     profile_picture_url: authUser.profile_picture_url || "",
-    budgetMin: authUser.budgetMin || "",
-    budgetMax: authUser.budgetMax || "",
     location: authUser.location || "",
     description: authUser.description || "",
+    phone: authUser.phone || "",
+    oldPassword: "",
+    newPassword: "",
+    confirmNewPassword: "",
   });
 
   const [showModal, setShowModal] = useState(false);
@@ -24,6 +27,11 @@ const UpdateProfile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (formData.newPassword && formData.newPassword !== formData.confirmNewPassword) {
+      alert("New passwords do not match.");
+      return;
+    }
+
     try {
       await axios.put(`http://localhost:3001/api/users/${authUser.id}`, formData, {
         withCredentials: true,
@@ -62,27 +70,37 @@ const UpdateProfile = () => {
           onChange={handleChange}
           placeholder="Profile Picture URL"
         />
-        <input
-          name="budgetMin"
-          type="number"
-          value={formData.budgetMin}
-          onChange={handleChange}
-          placeholder="Budget Min"
-        />
-        <input
-          name="budgetMax"
-          type="number"
-          value={formData.budgetMax}
-          onChange={handleChange}
-          placeholder="Budget Max"
-        />
         <input name="location" value={formData.location} onChange={handleChange} placeholder="Location" />
+        <input name="phone" value={formData.phone} onChange={handleChange} placeholder="Phone Number" />
         <textarea
           name="description"
           value={formData.description}
           onChange={handleChange}
           placeholder="Description"
         />
+
+        <input
+          type="password"
+          name="oldPassword"
+          value={formData.oldPassword}
+          onChange={handleChange}
+          placeholder="Current Password"
+        />
+        <input
+          type="password"
+          name="newPassword"
+          value={formData.newPassword}
+          onChange={handleChange}
+          placeholder="New Password"
+        />
+        <input
+          type="password"
+          name="confirmNewPassword"
+          value={formData.confirmNewPassword}
+          onChange={handleChange}
+          placeholder="Confirm New Password"
+        />
+
         <button type="submit">Update Profile</button>
       </form>
 
