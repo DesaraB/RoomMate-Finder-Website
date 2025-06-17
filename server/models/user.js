@@ -69,6 +69,10 @@ const User = sequelize.define(
       type: DataTypes.TEXT,
       allowNull: true,
     },
+    location: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
   },
   {
     tableName: "users",
