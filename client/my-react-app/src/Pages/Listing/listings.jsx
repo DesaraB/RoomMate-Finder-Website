@@ -43,6 +43,25 @@ const Listings = () => {
     }
   };
 
+  const handleSave = async (listingId) => {
+    try {
+      const res = await axios.post(
+        "http://localhost:3001/api/interests",
+        { listingId },
+        { withCredentials: true }
+      );
+
+      if (res.status === 201) {
+        alert("Room saved successfully!");
+      }
+    } catch (error) {
+      console.error("Error saving room:", error);
+      alert(
+        "This room may already be saved or you're not logged in as a seeker."
+      );
+    }
+  };
+
   return (
     <div className="listings-page">
       <div className="listings-container">
@@ -89,12 +108,20 @@ const Listings = () => {
                       View Details →
                     </button>
                     {authUser.role === "seeker" && (
-                      <button
-                        className="apply-btn"
-                        onClick={() => handleApply(listing.id)}
-                      >
-                        Apply
-                      </button>
+                      <>
+                        <button
+                          className="apply-btn"
+                          onClick={() => handleApply(listing.id)}
+                        >
+                          Apply
+                        </button>
+                        <button
+                          className="save-btn"
+                          onClick={() => handleSave(listing.id)}
+                        >
+                          Save
+                        </button>
+                      </>
                     )}
                   </div>
                 </div>

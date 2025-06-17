@@ -1,43 +1,82 @@
-const  Interest  = require('../models/interest');
+// ✅ Fixed: controllers/interestController.js
+const Interest = require("../models/Interest");
+const Listing = require("../models/Listing");
+const User = require("../models/User");
 
-// Create a new interest
-exports.createInterest = async (req, res) => {
+// ✅ Make sure Sequelize associations are loaded (to enable `include`)
+require("../models/associations"); // This sets up associations
+
+// Get interests for logged-in seeker
+exports.getInterests = async (req, res) => {
   try {
-    const newInterest = await Interest.create(req.body);
-    res.status(201).json(newInterest);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
+    const seekerId = req.user.id;
+
+    const interests = await Interest.findAll({
+      where: { seeker_id: seekerId },
+      include: [
+        {
+          model: Listing,
+          as: "listing",
+          include: {
+            model: User,
+            as: "provider",
+            attributes: ["id", "name", "email"],
+          },
+        },
+      ],
+    });
+
+    res.status(200).json(interests);
+  } catch (error) {
+    console.error("Error fetching interests:", error);
+    res.status(500).json({ error: "Server error" });
   }
 };
 
-// Get all interests
-exports.getAllInterests = async (req, res) => {
+// Save a listing
+exports.saveInterest = async (req, res) => {
   try {
-    const interests = await Interest.findAll();
-    res.json(interests);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    const { listingId } = req.body;
+    const seekerId = req.user.id;
+
+    const alreadySaved = await Interest.findOne({
+      where: { seeker_id: seekerId, listing_id: listingId },
+    });
+
+    if (alreadySaved) {
+      return res.status(400).json({ error: "You already saved this listing." });
+    }
+
+    const interest = await Interest.create({
+      seeker_id: seekerId,
+      listing_id: listingId,
+    });
+
+    res.status(201).json(interest);
+  } catch (error) {
+    console.error("Error saving interest:", error);
+    res.status(500).json({ error: "Server error" });
   }
 };
 
-// Get interest by ID
-exports.getInterestById = async (req, res) => {
-  try {
-    const interest = await Interest.findByPk(req.params.id);
-    if (!interest) return res.status(404).json({ error: 'Interest not found' });
-    res.json(interest);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
-// Delete interest
+// Remove saved listing
 exports.deleteInterest = async (req, res) => {
   try {
-    const deleted = await Interest.destroy({ where: { id: req.params.id } });
-    if (!deleted) return res.status(404).json({ error: 'Interest not found' });
-    res.json({ message: 'Interest deleted successfully' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    const { id } = req.params;
+    const seekerId = req.user.id;
+
+    const interest = await Interest.findOne({
+      where: { id, seeker_id: seekerId },
+    });
+
+    if (!interest) {
+      return res.status(404).json({ error: "Interest not found." });
+    }
+
+    await interest.destroy();
+    res.status(200).json({ message: "Removed from saved listings." });
+  } catch (error) {
+    console.error("Error deleting interest:", error);
+    res.status(500).json({ error: "Server error" });
   }
 };

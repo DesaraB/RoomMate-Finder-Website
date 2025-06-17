@@ -10,6 +10,7 @@ const userRoutes = require("./routes/userRoutes");
 const listingRoutes = require("./routes/listingRoutes");
 const publicRoutes = require("./routes/publicRoutes");
 const applicationRoutes = require("./routes/applicationRoutes");
+const interestRoutes= require("./routes/interestRoutes");
 
 dotenv.config();
 
@@ -38,10 +39,11 @@ app.use(authToken);
 app.use("/api/users", userRoutes);
 app.use("/api/listings", listingRoutes);
 app.use("/api/applications", applicationRoutes);
+app.use("/api/interests", interestRoutes);
 
 // Sequelize sync
 sequelize
-  .sync()
+.sync() 
   .then(() => console.log("Database synced"))
   .catch((err) => console.error("Sync error:", err));
 

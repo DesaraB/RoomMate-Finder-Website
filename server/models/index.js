@@ -1,43 +1,13 @@
 const sequelize = require("../config/database");
 
-// Import models
-const User = require("./User");
-const Listing = require("./Listing");
-const Application = require("./Application");
+const { User, Listing, Application, Interest } = require("./associations"); // 👈 use this
 
-// Initialize db object
 const db = {
   sequelize,
   User,
   Listing,
   Application,
+  Interest,
 };
 
-// Define associations AFTER all models are imported
-User.hasMany(Listing, {
-  foreignKey: "provider_id",
-  as: "listings", // optional alias for clarity
-});
-
-User.hasMany(Application, {
-  foreignKey: "seeker_id",
-  as: "applicationsAsSeeker",
-});
-
-Application.belongsTo(User, {
-  foreignKey: "seeker_id",
-  as: "seeker",
-});
-
-Application.belongsTo(Listing, {
-  foreignKey: "listing_id",
-  as: "listing",
-});
-
-Listing.belongsTo(User, {
-  foreignKey: "provider_id",
-  as: "provider",
-});
-
-// Export everything
 module.exports = db;

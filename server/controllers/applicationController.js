@@ -4,7 +4,6 @@ const { Application, Listing, User } = require("../models");
 exports.getApplicationsForSeeker = async (req, res) => {
   try {
     const seekerId = req.user.id;
-    console.log(req.user)
 
     const applications = await Application.findAll({
       where: { seeker_id: seekerId },
@@ -22,7 +21,6 @@ exports.getApplicationsForSeeker = async (req, res) => {
       order: [["createdAt", "DESC"]],
     });
 
-    console.log("Applications for seeker:", applications); // ✅ Debug
     res.status(200).json(applications);
   } catch (error) {
     console.error("Error fetching applications:", error);
@@ -147,3 +145,28 @@ exports.getApplicationsForProvider = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
+// PUT /api/applications/:id/status
+exports.updateApplicationStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!["accepted", "declined"].includes(status)) {
+      return res.status(400).json({ error: "Invalid status" });
+    }
+
+    const application = await Application.findByPk(id);
+    if (!application) {
+      return res.status(404).json({ error: "Application not found" });
+    }
+
+    application.status = status;
+    await application.save();
+
+    res.status(200).json(application);
+  } catch (error) {
+    console.error("Error updating status:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+

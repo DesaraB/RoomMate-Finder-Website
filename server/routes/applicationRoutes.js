@@ -19,5 +19,6 @@ router.patch("/:id", applicationController.updateApplication);
 
 // ✅ New: Get applications for listings of the logged-in provider
 router.get("/provider", applicationController.getApplicationsForProvider);
+router.put("/:id/status", applicationController.updateApplicationStatus);
 
 module.exports = router;

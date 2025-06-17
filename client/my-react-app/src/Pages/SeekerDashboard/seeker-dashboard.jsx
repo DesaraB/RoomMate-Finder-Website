@@ -159,20 +159,19 @@ const SeekerDashboard = () => {
                       className="room-image"
                     />
                     <div className="room-info">
-                      <h4>{room?.title || "No title"}</h4>
-                      <p>${room?.price || "N/A"}/month</p>
+                      <h4>{room.listing?.title || "No title"}</h4>
+                      <p>${room.listing?.price || "N/A"}/month</p>
                       <small>
-                        {room.location || "Unknown location"} •{" "}
-                        {room.bedrooms || "?"} bedrooms
+                        {room.listing?.location || "Unknown location"} •{" "}
+                        {room.listing?.bedrooms || "?"} bedrooms
                       </small>
                     </div>
                     <div className="room-actions">
                       <button
                         className="view-btn"
-                        onClick={() => {
-                          console.log(room);
-                          // navigate(`/view-room/${room.id}`)
-                        }}
+                        onClick={() =>
+                          navigate(`/view-room/${room.listing?.id}`)
+                        }
                       >
                         View
                       </button>
@@ -200,7 +199,7 @@ const SeekerDashboard = () => {
           </button>
           <button
             className="action-btn secondary"
-            onClick={() => navigate("/update-profile")} // or your profile update path
+            onClick={() => navigate("/update-profile")}
           >
             Update My Profile
           </button>
