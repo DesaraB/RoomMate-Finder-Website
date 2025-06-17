@@ -154,9 +154,7 @@ const ProviderDashboard = () => {
                     await axios.post(
                       "http://localhost:3001/api/listings",
                       roomData,
-                      {
-                        withCredentials: true,
-                      }
+                      { withCredentials: true }
                     );
                     alert("Room added!");
                     e.target.reset();
@@ -199,34 +197,36 @@ const ProviderDashboard = () => {
               {listings.length === 0 ? (
                 <p>No listings yet.</p>
               ) : (
-                listings.map((listing) => (
-                  <div key={listing.id} className="listing-item">
-                    <img
-                      src={listing.photo_url || "https://via.placeholder.com/300"}
-                      alt={listing.title}
-                      className="listing-image"
-                    />
-                    <div className="listing-info">
-                      <h4>{listing.title}</h4>
-                      <p>${listing.price}/month</p>
-                      <div className="listing-stats">
-                        <span>{listing.views || 0} views</span>
-                        <span>{listing.applications?.length || 0} applications</span>
+                [...listings]
+                  .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                  .map((listing) => (
+                    <div key={listing.id} className="listing-item">
+                      <img
+                        src={listing.photo_url || "https://via.placeholder.com/300"}
+                        alt={listing.title}
+                        className="listing-image"
+                      />
+                      <div className="listing-info">
+                        <h4>{listing.title}</h4>
+                        <p>${listing.price}/month</p>
+                        <div className="listing-stats">
+                          <span>{listing.views || 0} views</span>
+                          <span>{listing.applications?.length || 0} applications</span>
+                        </div>
+                      </div>
+                      <div className="listing-status">
+                        <span
+                          className="status-badge"
+                          style={{ backgroundColor: getStatusColor("active") }}
+                        >
+                          active
+                        </span>
+                        <button className="edit-btn" onClick={() => handleEdit(listing)}>
+                          Edit
+                        </button>
                       </div>
                     </div>
-                    <div className="listing-status">
-                      <span
-                        className="status-badge"
-                        style={{ backgroundColor: getStatusColor("active") }}
-                      >
-                        active
-                      </span>
-                      <button className="edit-btn" onClick={() => handleEdit(listing)}>
-                        Edit
-                      </button>
-                    </div>
-                  </div>
-                ))
+                  ))
               )}
             </div>
           </div>
