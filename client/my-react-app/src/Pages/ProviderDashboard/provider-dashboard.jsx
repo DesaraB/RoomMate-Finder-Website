@@ -179,7 +179,7 @@ const ProviderDashboard = () => {
                 <input name="title" placeholder="Room Title" required />
                 <textarea name="description" placeholder="Description" required />
                 <input name="location" placeholder="Location" required />
-                <input name="price" type="number" placeholder="Price" step="0.01" required />
+                <input name="price" type="number" placeholder="Rent" step="0.01" required />
                 <input name="bedrooms" type="number" placeholder="Bedrooms" required />
                 <input name="bathrooms" type="number" step="0.5" placeholder="Bathrooms" required />
                 <select name="property_type" required>

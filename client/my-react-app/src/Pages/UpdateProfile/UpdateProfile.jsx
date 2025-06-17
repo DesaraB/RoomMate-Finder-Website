@@ -1,24 +1,42 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuthContext } from "../../Context/AuthContext";
 import axios from "axios";
 import "./updateprofile.css";
 
 const UpdateProfile = () => {
   const { authUser, setTrigger, logoutUser } = useAuthContext();
-
-  const [formData, setFormData] = useState({
-    name: authUser.name || "",
-    email: authUser.email || "",
-    profile_picture_url: authUser.profile_picture_url || "",
-    location: authUser.location || "",
-    description: authUser.description || "",
-    phone: authUser.phone || "",
-    oldPassword: "",
-    newPassword: "",
-    confirmNewPassword: "",
-  });
-
+  const [formData, setFormData] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [showModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const res = await axios.get(`http://localhost:3001/api/users/${authUser.id}`, {
+          withCredentials: true,
+        });
+        const user = res.data;
+
+        setFormData({
+          name: user.name || "",
+          email: user.email || "",
+          profile_picture_url: user.profile_picture_url || "",
+          location: user.location || "",
+          description: user.description || "",
+          phone_number: user.phone_number || "",
+          budgetMin: user.budgetMin || "",
+          budgetMax: user.budgetMax || "",
+          password: "",
+        });
+      } catch (error) {
+        console.error("Error fetching user data", error);
+      }
+    };
+
+    if (authUser?.id) {
+      fetchUserData();
+    }
+  }, [authUser?.id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -27,20 +45,26 @@ const UpdateProfile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.newPassword && formData.newPassword !== formData.confirmNewPassword) {
-      alert("New passwords do not match.");
-      return;
-    }
+    setIsSubmitting(true);
 
     try {
-      await axios.put(`http://localhost:3001/api/users/${authUser.id}`, formData, {
+      const payload = {
+        ...formData,
+        budgetMin: authUser.role === "seeker" ? parseFloat(formData.budgetMin) || null : undefined,
+        budgetMax: authUser.role === "seeker" ? parseFloat(formData.budgetMax) || null : undefined,
+      };
+
+      await axios.put(`http://localhost:3001/api/users/${authUser.id}`, payload, {
         withCredentials: true,
       });
+
       alert("Profile updated successfully!");
       setTrigger((prev) => !prev);
     } catch (error) {
       console.error("Error updating profile", error);
       alert("Failed to update profile.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -58,6 +82,8 @@ const UpdateProfile = () => {
     }
   };
 
+  if (!formData) return <p style={{ textAlign: "center" }}>Loading profile...</p>;
+
   return (
     <div className="update-profile">
       <h2>Update Your Profile</h2>
@@ -71,7 +97,6 @@ const UpdateProfile = () => {
           placeholder="Profile Picture URL"
         />
         <input name="location" value={formData.location} onChange={handleChange} placeholder="Location" />
-        <input name="phone" value={formData.phone} onChange={handleChange} placeholder="Phone Number" />
         <textarea
           name="description"
           value={formData.description}
@@ -79,29 +104,45 @@ const UpdateProfile = () => {
           placeholder="Description"
         />
 
+        {authUser.role === "seeker" && (
+          <>
+            <input
+              name="budgetMin"
+              type="number"
+              value={formData.budgetMin}
+              onChange={handleChange}
+              placeholder="Budget Min"
+            />
+            <input
+              name="budgetMax"
+              type="number"
+              value={formData.budgetMax}
+              onChange={handleChange}
+              placeholder="Budget Max"
+            />
+          </>
+        )}
+
+        {authUser.role === "provider" && (
+          <input
+            name="phone_number"
+            value={formData.phone_number}
+            onChange={handleChange}
+            placeholder="Phone Number"
+          />
+        )}
+
         <input
+          name="password"
           type="password"
-          name="oldPassword"
-          value={formData.oldPassword}
+          value={formData.password}
           onChange={handleChange}
-          placeholder="Current Password"
-        />
-        <input
-          type="password"
-          name="newPassword"
-          value={formData.newPassword}
-          onChange={handleChange}
-          placeholder="New Password"
-        />
-        <input
-          type="password"
-          name="confirmNewPassword"
-          value={formData.confirmNewPassword}
-          onChange={handleChange}
-          placeholder="Confirm New Password"
+          placeholder="New Password (optional)"
         />
 
-        <button type="submit">Update Profile</button>
+        <button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Updating..." : "Update Profile"}
+        </button>
       </form>
 
       <button className="delete-account-btn" onClick={() => setShowModal(true)}>

@@ -70,8 +70,7 @@ const AuthProvider = (props) => {
 
   
 
-  const values = { authUser, loginUser, logoutUser ,sara};
-
+  const values = { authUser, loginUser, logoutUser, sara, setTrigger, trigger };
   return (
     <AuthContext.Provider value={values}>{props.children}</AuthContext.Provider>
   );
