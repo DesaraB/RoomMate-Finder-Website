@@ -10,6 +10,10 @@
   z-index: 999;
 }
 
+.logo {
+  min-width: 150px;
+}
+
 .logo a {
   background-color: #ff8177;
   background-image: linear-gradient(to top, #8d626d 0%, #252314 100%);
@@ -34,7 +38,9 @@
 .nav-right {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   margin-right: 50px;
+  min-width: 150px;
 }
 
 .nav-links {
@@ -68,45 +74,7 @@
 .hamburger-btn {
   background: none;
   border: none;
-  font-size: 1.6rem;
-  color: white;
-  cursor: pointer;
-}
-
-.hamburger-dropdown {
-  position: absolute;
-  top: 2.5rem;
-  right: 0;
-  background-color: #252314;
-  border-radius: 8px;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  z-index: 1000;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-}
-
-.hamburger-dropdown button {
-  background: none;
-  border: none;
-  color: white;
-  padding: 0.5rem 0;
-  text-align: left;
-  cursor: pointer;
-  font-size: small;
-}
-
-.hamburger-dropdown button:hover {
-  color: #ffdb70;
-}
-.hamburger-container {
-  position: relative;
-}
-
-.hamburger-btn {
   font-size: 1.8rem;
-  background: none;
-  border: none;
   color: white;
   cursor: pointer;
   padding: 5px 10px;

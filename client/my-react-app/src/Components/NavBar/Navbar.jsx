@@ -53,11 +53,23 @@ export const Navbar = () => {
 
       <div className="nav-center">
         <ul className="nav-links">
-          <li><Link to="/">Home</Link></li>
-          <li><Link to="/listings">Listings</Link></li>
-          <li><Link to="/about-us">About</Link></li>
-          <li><Link to="/contact">Contact</Link></li>
-          <li><Link to="/how it works">How It Works</Link></li>
+          {!authUser.name && (
+            <li>
+              <Link to="/">Home</Link>
+            </li>
+          )}
+          <li>
+            <Link to="/listings">Listings</Link>
+          </li>
+          <li>
+            <Link to="/about-us">About</Link>
+          </li>
+          <li>
+            <Link to="/contact">Contact</Link>
+          </li>
+          <li>
+            <Link to="/how it works">How It Works</Link>
+          </li>
         </ul>
       </div>
 
@@ -80,8 +92,12 @@ export const Navbar = () => {
           </div>
         ) : (
           <ul className="nav-links">
-            <li><Link to="/login">Login</Link></li>
-            <li><Link to="/register">Register</Link></li>
+            <li>
+              <Link to="/login">Login</Link>
+            </li>
+            <li>
+              <Link to="/register">Register</Link>
+            </li>
           </ul>
         )}
       </div>
