@@ -14,14 +14,14 @@ const Listings = () => {
   }, []);
 
   const fetchListings = async () => {
-    try {
-      const res = await axios.get("http://localhost:3001/api/listings", {
-        withCredentials: true,
-      });
-      setListings(res.data);
-    } catch (error) {
-      console.error("Error fetching listings", error);
-    }
+    const res = await axios.get("http://localhost:3001/api/listings");
+
+    // Sort by createdAt (descending) so newest listings come first
+    const sortedListings = res.data.sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    );
+
+    setListings(sortedListings);
   };
 
   const handleApply = async (listingId) => {
