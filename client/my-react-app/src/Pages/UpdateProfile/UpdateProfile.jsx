@@ -52,7 +52,7 @@ const UpdateProfile = () => {
         ...formData, 
         budgetMin: authUser.role === "seeker" ? parseFloat(formData.budgetMin) || null : undefined, 
         budgetMax: authUser.role === "seeker" ? parseFloat(formData.budgetMax) || null : undefined, 
-      }; 
+      };
 
       await axios.put(`http://localhost:3001/api/users/${authUser.id}`, payload, { 
         withCredentials: true, 

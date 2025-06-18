@@ -47,14 +47,25 @@ exports.getUserById = async (req, res) => {
 
 // Update user
 exports.updateUser = async (req, res) => {
+  console.log("Received update payload:", req.body);
   try {
+    const { password, ...otherFields } = req.body;
+    const updatedData = { ...otherFields };
 
-    const user = await User.findByPk(req.params.id);
-    await user.update(req.body);
-    res.status(200).json(user);
-  } catch (err) {
-    console.error("Update user error:", err);
-    res.status(500).json({ error: err.message });
+    if (password && password.trim() !== "") {
+      // ✅ Hash the new password before saving
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updatedData.password = hashedPassword;
+    }
+
+    await User.update(updatedData, {
+      where: { id: req.params.id },
+    });
+
+    res.status(200).json({ message: "User updated successfully" });
+  } catch (error) {
+    console.error("Update user error:", error);
+    res.status(500).json({ error: "Failed to update user" });
   }
 };
 
