@@ -23,11 +23,19 @@ exports.register = async (req, res) => {
       age,
       children,
       description,
-      homeData // Only for provider
+      homeData, // Only for provider
     } = req.body;
 
     // Validate required user fields
-    if (!name || !email || !password || !gender || !role || !dateOfBirth || !age) {
+    if (
+      !name ||
+      !email ||
+      !password ||
+      !gender ||
+      !role ||
+      !dateOfBirth ||
+      !age
+    ) {
       return res.status(400).json({ error: "Missing required user fields" });
     }
 
@@ -44,7 +52,9 @@ exports.register = async (req, res) => {
         !homeData.property_type ||
         !homeData.available_from
       ) {
-        return res.status(400).json({ error: "Missing required listing fields for provider" });
+        return res
+          .status(400)
+          .json({ error: "Missing required listing fields for provider" });
       }
     }
 
@@ -73,7 +83,7 @@ exports.register = async (req, res) => {
       moveInDate: role === "seeker" ? moveInDate : null,
       age,
       children: role === "seeker" ? children : null,
-      description
+      description,
     });
 
     // If provider, create the listing
@@ -90,27 +100,27 @@ exports.register = async (req, res) => {
         available_from: homeData.available_from,
         lease_term: homeData.lease_term || "",
         photo_url: homeData.photo_url || "",
-        provider_id: newUser.id
+        provider_id: newUser.id,
       });
     }
 
     // ✅ Generate JWT with role included
     const token = jwt.sign(
       { id: newUser.id, role: newUser.role },
-      "your_jwt_secret",
+      process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
 
     res.cookie("jwt", token, {
       httpOnly: true,
-      sameSite: "Lax"
+      sameSite: "Lax",
     });
 
     const { password: _, ...safeUser } = newUser.get({ plain: true });
 
     res.status(201).json({
       message: "Registration successful",
-      user: safeUser
+      user: safeUser,
     });
   } catch (err) {
     console.error("Create user error:", err);
@@ -123,31 +133,42 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ error: "Email and password are required." });
+    }
+
     const user = await User.findOne({ where: { email } });
-    if (!user) throw new HttpError("You are not registered", 404);
+    if (!user) {
+      return res.status(401).json({ error: "Invalid credentials." });
+    }
 
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) throw new HttpError("Your password does not match", 401);
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: "Invalid credentials." });
+    }
 
-    // ✅ Include role in JWT
     const token = jwt.sign(
       { id: user.id, role: user.role },
-      "your_jwt_secret",
-      { expiresIn: "7d" }
+      process.env.JWT_SECRET, // ✅ Use env variable
+      { expiresIn: "1d" }
     );
 
     res.cookie("jwt", token, {
       httpOnly: true,
-      sameSite: "Lax"
+      sameSite: "Lax",
+      secure: false,
     });
 
     const { password: _, ...safeUser } = user.get({ plain: true });
 
-    res.status(200).json({ status: 200, user: safeUser });
+    return res.status(200).json({ status: 200, user: safeUser });
   } catch (error) {
-    res.status(400).json({ error: error.message, status: error.status });
+    console.error("Login error:", error);
+    return res.status(500).json({ error: "Server error." });
   }
-};
+}; // ✅ CLOSES login function only
 
 // ✅ GET ALL LISTINGS
 exports.listings = async (req, res) => {
@@ -157,9 +178,9 @@ exports.listings = async (req, res) => {
         {
           model: User,
           as: "provider",
-          attributes: ["id", "name", "email"]
-        }
-      ]
+          attributes: ["id", "name", "email"],
+        },
+      ],
     });
     res.status(200).json(listings);
   } catch (error) {
