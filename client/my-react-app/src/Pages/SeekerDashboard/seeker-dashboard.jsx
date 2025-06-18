@@ -1,3 +1,4 @@
+// SeekerDashboard.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -8,17 +9,6 @@ const SeekerDashboard = () => {
   const { authUser } = useAuthContext();
   const navigate = useNavigate();
 
-  const seekerData = {
-    name: authUser.name || "User",
-    profileImage:
-      authUser.profileImage ||
-      authUser.avatar ||
-      "https://images.unsplash.com/photo-1494790108755-2616b612d1cf?w=100",
-    budget: authUser.budget || "$800-1200",
-    location: authUser.location || "Downtown/University District",
-    email: authUser.email,
-  };
-
   const [myApplications, setMyApplications] = useState([]);
   const [savedRooms, setSavedRooms] = useState([]);
 
@@ -27,9 +17,7 @@ const SeekerDashboard = () => {
       try {
         const response = await axios.get(
           "http://localhost:3001/api/applications",
-          {
-            withCredentials: true,
-          }
+          { withCredentials: true }
         );
         setMyApplications(response.data);
       } catch (error) {
@@ -41,9 +29,7 @@ const SeekerDashboard = () => {
       try {
         const response = await axios.get(
           "http://localhost:3001/api/interests",
-          {
-            withCredentials: true,
-          }
+          { withCredentials: true }
         );
         setSavedRooms(response.data);
       } catch (error) {
@@ -107,12 +93,15 @@ const SeekerDashboard = () => {
         <div className="dashboard-header">
           <div className="welcome-section">
             <img
-              src={seekerData.profileImage}
+              src={
+                authUser.profileImage ||
+                "https://images.unsplash.com/photo-1494790108755-2616b612d1cf?w=100"
+              }
               alt="Profile"
               className="profile-image"
             />
             <div className="welcome-text">
-              <h1>Welcome back, {seekerData.name}!</h1>
+              <h1>Welcome back, {authUser.name || "User"}!</h1>
               <p>Find your perfect roommate and housing situation</p>
             </div>
           </div>
@@ -142,9 +131,22 @@ const SeekerDashboard = () => {
                       <p>${application.listing?.price}/month</p>
                       <small>
                         Applied on{" "}
-                        {new Date(application.createdAt).toLocaleDateString()} • Provider:{" "}
-                        {application.listing?.provider?.name}
+                        {new Date(application.createdAt).toLocaleDateString()} •
+                        Provider: {application.listing?.provider?.name}
                       </small>
+                      {application.status === "accepted" && (
+                        <div className="accepted-contact">
+                          <p>✅ Your application has been accepted!</p>
+                          <p>
+                            <strong>Email:</strong>{" "}
+                            {application.listing?.provider?.email}
+                          </p>
+                          <p>
+                            <strong>Phone:</strong>{" "}
+                            {application.listing?.provider?.phone_number}
+                          </p>
+                        </div>
+                      )}
                     </div>
                     <div className="application-status">
                       <span

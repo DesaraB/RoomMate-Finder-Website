@@ -21,4 +21,5 @@ router.patch("/:id", applicationController.updateApplication);
 router.get("/provider", applicationController.getApplicationsForProvider);
 router.put("/:id/status", applicationController.updateApplicationStatus);
 
+
 module.exports = router;

@@ -14,7 +14,7 @@ exports.getApplicationsForSeeker = async (req, res) => {
           include: {
             model: User,
             as: "provider",
-            attributes: ["id", "name", "email"],
+            attributes: ["id", "name", "email", "phone_number"],
           },
         },
       ],
@@ -77,7 +77,7 @@ exports.deleteApplication = async (req, res) => {
     const seekerId = req.user.id;
 
     const application = await Application.findOne({
-      where: { id, seekerId },
+      where: { id, seeker_id: seekerId }, // ✅ FIXED HERE
     });
 
     if (!application) {
@@ -92,6 +92,7 @@ exports.deleteApplication = async (req, res) => {
   }
 };
 
+
 // 4️⃣ Update application
 exports.updateApplication = async (req, res) => {
   try {
@@ -100,7 +101,7 @@ exports.updateApplication = async (req, res) => {
     const updates = req.body;
 
     const application = await Application.findOne({
-      where: { id, seekerId },
+      where: { id, seeker_id: seekerId }, // ✅ FIXED HERE
     });
 
     if (!application) {
@@ -114,6 +115,7 @@ exports.updateApplication = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
+
 
 // 5️⃣ Get applications for listings of the logged-in provider
 exports.getApplicationsForProvider = async (req, res) => {

@@ -79,21 +79,21 @@ const ProviderDashboard = () => {
   };
 
   const handleApplicationStatus = async (appId, status) => {
-    try {
-      await axios.patch(
-        `http://localhost:3001/api/applications/${appId}`,
-        { status },
-        { withCredentials: true }
-      );
-      const response = await axios.get(
-        "http://localhost:3001/api/applications/provider",
-        { withCredentials: true }
-      );
-      setApplications(response.data);
-    } catch (error) {
-      console.error("Error updating application status:", error);
-    }
-  };
+  try {
+    await axios.put(
+      `http://localhost:3001/api/applications/${appId}/status`,
+      { status },
+      { withCredentials: true }
+    );
+    const response = await axios.get(
+      "http://localhost:3001/api/applications/provider",
+      { withCredentials: true }
+    );
+    setApplications(response.data);
+  } catch (error) {
+    console.error("Error updating application status:", error);
+  }
+};
 
   const handleEdit = (listing) => {
     navigate(`/edit-room/${listing.id}`);
