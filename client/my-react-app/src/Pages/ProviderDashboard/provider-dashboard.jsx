@@ -10,10 +10,9 @@ const ProviderDashboard = () => {
 
   const providerData = {
     name: authUser.name || "Provider",
-    profileImage:
-      authUser.profileImage ||
-      authUser.avatar ||
-      "https://images.unsplash.com/photo-1494790108755-2616b612d1cf?w=100",
+    profileImage: authUser.profile_picture_url
+      ? `http://localhost:3001${authUser.profile_picture_url}`
+      : "https://images.unsplash.com/photo-1494790108755-2616b612d1cf?w=100",
     totalListings: authUser.totalListings || 3,
     activeListings: authUser.activeListings || 2,
     totalApplications: authUser.totalApplications || 8,
@@ -79,21 +78,21 @@ const ProviderDashboard = () => {
   };
 
   const handleApplicationStatus = async (appId, status) => {
-  try {
-    await axios.put(
-      `http://localhost:3001/api/applications/${appId}/status`,
-      { status },
-      { withCredentials: true }
-    );
-    const response = await axios.get(
-      "http://localhost:3001/api/applications/provider",
-      { withCredentials: true }
-    );
-    setApplications(response.data);
-  } catch (error) {
-    console.error("Error updating application status:", error);
-  }
-};
+    try {
+      await axios.put(
+        `http://localhost:3001/api/applications/${appId}/status`,
+        { status },
+        { withCredentials: true }
+      );
+      const response = await axios.get(
+        "http://localhost:3001/api/applications/provider",
+        { withCredentials: true }
+      );
+      setApplications(response.data);
+    } catch (error) {
+      console.error("Error updating application status:", error);
+    }
+  };
 
   const handleEdit = (listing) => {
     navigate(`/edit-room/${listing.id}`);
@@ -177,11 +176,32 @@ const ProviderDashboard = () => {
                 }}
               >
                 <input name="title" placeholder="Room Title" required />
-                <textarea name="description" placeholder="Description" required />
+                <textarea
+                  name="description"
+                  placeholder="Description"
+                  required
+                />
                 <input name="location" placeholder="Location" required />
-                <input name="price" type="number" placeholder="Rent" step="0.01" required />
-                <input name="bedrooms" type="number" placeholder="Bedrooms" required />
-                <input name="bathrooms" type="number" step="0.5" placeholder="Bathrooms" required />
+                <input
+                  name="price"
+                  type="number"
+                  placeholder="Rent"
+                  step="0.01"
+                  required
+                />
+                <input
+                  name="bedrooms"
+                  type="number"
+                  placeholder="Bedrooms"
+                  required
+                />
+                <input
+                  name="bathrooms"
+                  type="number"
+                  step="0.5"
+                  placeholder="Bathrooms"
+                  required
+                />
                 <select name="property_type" required>
                   <option value="">Select Property Type</option>
                   <option value="apartment">Apartment</option>
@@ -189,7 +209,10 @@ const ProviderDashboard = () => {
                   <option value="condo">Condo</option>
                   <option value="studio">Studio</option>
                 </select>
-                <input name="amenities" placeholder="Amenities (comma separated)" />
+                <input
+                  name="amenities"
+                  placeholder="Amenities (comma separated)"
+                />
                 <input name="available_from" type="date" required />
                 <input name="lease_term" placeholder="Lease Term" />
                 <input name="photo_url" placeholder="Photo URL" />
@@ -206,7 +229,9 @@ const ProviderDashboard = () => {
                   .map((listing) => (
                     <div key={listing.id} className="listing-item">
                       <img
-                        src={listing.photo_url || "https://via.placeholder.com/300"}
+                        src={
+                          listing.photo_url || "https://via.placeholder.com/300"
+                        }
                         alt={listing.title}
                         className="listing-image"
                       />
@@ -215,7 +240,9 @@ const ProviderDashboard = () => {
                         <p>${listing.price}/month</p>
                         <div className="listing-stats">
                           <span>{listing.views || 0} views</span>
-                          <span>{listing.applications?.length || 0} applications</span>
+                          <span>
+                            {listing.applications?.length || 0} applications
+                          </span>
                         </div>
                       </div>
                       <div className="listing-status">
@@ -225,7 +252,10 @@ const ProviderDashboard = () => {
                         >
                           active
                         </span>
-                        <button className="edit-btn" onClick={() => handleEdit(listing)}>
+                        <button
+                          className="edit-btn"
+                          onClick={() => handleEdit(listing)}
+                        >
                           Edit
                         </button>
                       </div>
@@ -266,7 +296,9 @@ const ProviderDashboard = () => {
                       </h4>
                       <p>{app.listing?.title}</p>
                       <small>
-                        Applied on {new Date(app.createdAt).toLocaleDateString()} • Status: {app.status}
+                        Applied on{" "}
+                        {new Date(app.createdAt).toLocaleDateString()} • Status:{" "}
+                        {app.status}
                       </small>
                     </div>
                     <div className="application-actions">
@@ -280,13 +312,17 @@ const ProviderDashboard = () => {
                         <div className="action-buttons">
                           <button
                             className="accept-btn"
-                            onClick={() => handleApplicationStatus(app.id, "accepted")}
+                            onClick={() =>
+                              handleApplicationStatus(app.id, "accepted")
+                            }
                           >
                             Accept
                           </button>
                           <button
                             className="decline-btn"
-                            onClick={() => handleApplicationStatus(app.id, "declined")}
+                            onClick={() =>
+                              handleApplicationStatus(app.id, "declined")
+                            }
                           >
                             Decline
                           </button>

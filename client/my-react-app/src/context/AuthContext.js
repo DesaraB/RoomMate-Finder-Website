@@ -43,6 +43,16 @@ const AuthProvider = (props) => {
       return error;
     }
   };
+  const refreshAuthUser = async () => {
+    try {
+      const result = await checkAuth_user_service();
+      if (result.data.status === 200) {
+        setAuthUser(result.data.user);
+      }
+    } catch (error) {
+      console.log("Failed to refresh user", error);
+    }
+  };
 
   const logoutUser = async () => {
     try {
@@ -68,9 +78,7 @@ const AuthProvider = (props) => {
     }
   };
 
-  
-
-  const values = { authUser, loginUser, logoutUser, sara, setTrigger, trigger };
+  const values = { authUser, loginUser, logoutUser, sara, setTrigger, trigger, refreshAuthUser };
   return (
     <AuthContext.Provider value={values}>{props.children}</AuthContext.Provider>
   );

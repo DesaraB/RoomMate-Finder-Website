@@ -48,16 +48,23 @@ exports.getUserById = async (req, res) => {
 // Update user
 exports.updateUser = async (req, res) => {
   console.log("Received update payload:", req.body);
+
   try {
     const { password, ...otherFields } = req.body;
     const updatedData = { ...otherFields };
 
+    // ✅ Add profile picture if a file was uploaded
+    if (req.file) {
+      updatedData.profile_picture_url = `/uploads/${req.file.filename}`;
+    }
+
+    // ✅ Hash password if present
     if (password && password.trim() !== "") {
-      // ✅ Hash the new password before saving
       const hashedPassword = await bcrypt.hash(password, 10);
       updatedData.password = hashedPassword;
     }
 
+    // ✅ Update user in DB
     await User.update(updatedData, {
       where: { id: req.params.id },
     });

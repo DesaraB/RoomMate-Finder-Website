@@ -7,6 +7,12 @@ import "./seeker-dashboard.css";
 
 const SeekerDashboard = () => {
   const { authUser } = useAuthContext();
+  const seekerData = {
+    name: authUser.name || "Seeker",
+    profileImage: authUser.profile_picture_url
+      ? `http://localhost:3001${authUser.profile_picture_url}`
+      : "https://images.unsplash.com/photo-1494790108755-2616b612d1cf?w=100",
+  };
   const navigate = useNavigate();
 
   const [myApplications, setMyApplications] = useState([]);
@@ -93,10 +99,7 @@ const SeekerDashboard = () => {
         <div className="dashboard-header">
           <div className="welcome-section">
             <img
-              src={
-                authUser.profileImage ||
-                "https://images.unsplash.com/photo-1494790108755-2616b612d1cf?w=100"
-              }
+              src={seekerData.profileImage}
               alt="Profile"
               className="profile-image"
             />
@@ -201,9 +204,7 @@ const SeekerDashboard = () => {
                       </button>
                       <button
                         className="apply-btn"
-                        onClick={() =>
-                          handleApply(room.listing?.id, room.id)
-                        }
+                        onClick={() => handleApply(room.listing?.id, room.id)}
                       >
                         Apply
                       </button>
