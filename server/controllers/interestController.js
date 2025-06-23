@@ -20,7 +20,7 @@ exports.getInterests = async (req, res) => {
           include: {
             model: User,
             as: "provider",
-            attributes: ["id", "name", "email"],
+            attributes: ["id", "fullname", "email"],
           },
         },
       ],

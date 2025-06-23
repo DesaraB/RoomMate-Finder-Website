@@ -20,7 +20,7 @@
 }
 
 .room-image {
-  width: 100%;
+  width: 20%;
   height: auto;
   border-radius: 10px;
   object-fit: cover;
@@ -95,4 +95,24 @@
   .room-image {
     height: 250px;
   }
+}
+.room-gallery {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.room-gallery-thumb {
+  width: 100px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  transition: transform 0.3s ease;
+}
+
+.room-gallery-thumb:hover {
+  transform: scale(1.05);
+  cursor: pointer;
 }

@@ -13,14 +13,22 @@ const login_user_service = async (values) => {
   return result;
 };
 
-// ✅ Check auth with credentials
-const checkAuth_user_service = async () => {
-  const result = await axios.get(
-    "http://localhost:3001/api/users/checkAuth",
+const register_user_service = async (values) => {
+  const result = await axios.post(
+    "http://localhost:3001/api/users/register",
+    values,
     {
       withCredentials: true, // ✅ Send cookie
     }
   );
+  return result;
+};
+
+// ✅ Check auth with credentials
+const checkAuth_user_service = async () => {
+  const result = await axios.get("http://localhost:3001/api/users/checkAuth", {
+    withCredentials: true, // ✅ Send cookie
+  });
   return result;
 };
 
@@ -45,6 +53,7 @@ const sara_services = async () => {
 
 export {
   login_user_service,
+  register_user_service,
   checkAuth_user_service,
   logout_user_service,
   sara_services,

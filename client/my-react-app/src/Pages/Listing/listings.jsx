@@ -97,7 +97,7 @@ const Listings = () => {
 
                   <div className="provider-name">
                     <strong>Provider:</strong>{" "}
-                    {listing.provider?.name || "Unknown"}
+                    {listing.provider?.fullname || "Unknown"}
                   </div>
 
                   <div className="listing-actions">

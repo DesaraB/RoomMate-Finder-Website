@@ -8,7 +8,7 @@ import "./seeker-dashboard.css";
 const SeekerDashboard = () => {
   const { authUser } = useAuthContext();
   const seekerData = {
-    name: authUser.name || "Seeker",
+    name: authUser.fullname || "Seeker",
     profileImage: authUser.profile_picture_url
       ? `http://localhost:3001${authUser.profile_picture_url}`
       : "https://images.unsplash.com/photo-1494790108755-2616b612d1cf?w=100",
@@ -104,7 +104,7 @@ const SeekerDashboard = () => {
               className="profile-image"
             />
             <div className="welcome-text">
-              <h1>Welcome back, {authUser.name || "User"}!</h1>
+              <h1>Welcome back, {authUser.fullname || "User"}!</h1>
               <p>Find your perfect roommate and housing situation</p>
             </div>
           </div>
@@ -135,7 +135,7 @@ const SeekerDashboard = () => {
                       <small>
                         Applied on{" "}
                         {new Date(application.createdAt).toLocaleDateString()} •
-                        Provider: {application.listing?.provider?.name}
+                        Provider: {application.listing?.provider?.fullname}
                       </small>
                       {application.status === "accepted" && (
                         <div className="accepted-contact">

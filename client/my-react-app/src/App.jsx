@@ -10,7 +10,7 @@ import Listings from "./Pages/Listing/listings";
 import ProviderDashboard from "./Pages/ProviderDashboard/provider-dashboard.jsx";
 import SeekerDashboard from "./Pages/SeekerDashboard/seeker-dashboard.jsx";
 import ProviderRegistration from "./Pages/Provider-Registration/provider-registration.jsx";
-import SeekerRegistration from "./Pages/Seeker-Registration/seek-registration.jsx";
+import SeekerRegistration from "./Pages/Seeker-Registration/seeker-registration.jsx";
 import Room from "./Pages/Room";
 import UpdateProfile from "./Pages/UpdateProfile/UpdateProfile.jsx";
 import SeekerProfile from "./Pages/SeekerProfile/SeekerProfile.jsx"

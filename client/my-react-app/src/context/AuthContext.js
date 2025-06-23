@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import {
   login_user_service,
+  register_user_service,
   checkAuth_user_service,
   logout_user_service,
   sara_services,
@@ -17,6 +18,19 @@ const AuthProvider = (props) => {
   const loginUser = async (data) => {
     try {
       const result = await login_user_service(data);
+      if (result.data.status === 200) {
+        setAuthUser(result.data.user);
+        return result.data.user;
+      }
+    } catch (error) {
+      console.log("error--in AuthProvider--", error);
+      throw error;
+    }
+  };
+
+  const registerUser = async (data) => {
+    try {
+      const result = await register_user_service(data);
       if (result.data.status === 200) {
         setAuthUser(result.data.user);
         return result.data.user;
@@ -78,7 +92,16 @@ const AuthProvider = (props) => {
     }
   };
 
-  const values = { authUser, loginUser, logoutUser, sara, setTrigger, trigger, refreshAuthUser };
+  const values = {
+    authUser,
+    loginUser,
+    registerUser,
+    logoutUser,
+    sara,
+    setTrigger,
+    trigger,
+    refreshAuthUser,
+  };
   return (
     <AuthContext.Provider value={values}>{props.children}</AuthContext.Provider>
   );

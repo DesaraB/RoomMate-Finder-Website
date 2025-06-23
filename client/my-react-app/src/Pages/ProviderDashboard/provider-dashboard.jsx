@@ -138,27 +138,51 @@ const ProviderDashboard = () => {
                 onSubmit={async (e) => {
                   e.preventDefault();
 
-                  const roomData = {
-                    title: e.target.title.value,
-                    description: e.target.description.value,
-                    location: e.target.location.value,
-                    price: e.target.price.value,
-                    bedrooms: e.target.bedrooms.value,
-                    bathrooms: e.target.bathrooms.value,
-                    property_type: e.target.property_type.value,
-                    amenities: e.target.amenities.value,
-                    available_from: e.target.available_from.value,
-                    lease_term: e.target.lease_term.value,
-                    photo_url: e.target.photo_url.value,
-                    provider_id: authUser.id,
-                  };
+                  const formData = new FormData();
+
+                  // Append text fields
+                  formData.append("title", e.target.title.value);
+                  formData.append("description", e.target.description.value);
+                  formData.append("location", e.target.location.value);
+                  formData.append("price", e.target.price.value);
+                  formData.append("bedrooms", e.target.bedrooms.value);
+                  formData.append("bathrooms", e.target.bathrooms.value);
+                  formData.append(
+                    "property_type",
+                    e.target.property_type.value
+                  );
+                  formData.append("amenities", e.target.amenities.value);
+                  formData.append(
+                    "available_from",
+                    e.target.available_from.value
+                  );
+                  formData.append("lease_term", e.target.lease_term.value);
+                  formData.append("provider_id", authUser.id);
+
+                  // ✅ Append cover photo
+                  const coverPhoto = e.target.cover_photo.files[0];
+                  if (coverPhoto) {
+                    formData.append("cover_photo", coverPhoto);
+                  }
+
+                  // ✅ Append gallery photos
+                  const galleryFiles = e.target.gallery_photos.files;
+                  for (let i = 0; i < galleryFiles.length; i++) {
+                    formData.append("gallery_photos", galleryFiles[i]);
+                  }
 
                   try {
                     await axios.post(
                       "http://localhost:3001/api/listings",
-                      roomData,
-                      { withCredentials: true }
+                      formData,
+                      {
+                        headers: {
+                          "Content-Type": "multipart/form-data",
+                        },
+                        withCredentials: true,
+                      }
                     );
+
                     alert("Room added!");
                     e.target.reset();
                     setShowAddForm(false);
@@ -215,7 +239,16 @@ const ProviderDashboard = () => {
                 />
                 <input name="available_from" type="date" required />
                 <input name="lease_term" placeholder="Lease Term" />
-                <input name="photo_url" placeholder="Photo URL" />
+                <label>Cover Photo:</label>
+                <input name="cover_photo" type="file" accept="image/*" />
+
+                <label>Gallery Photos:</label>
+                <input
+                  name="gallery_photos"
+                  type="file"
+                  accept="image/*"
+                  multiple
+                />
                 <button type="submit">Submit</button>
               </form>
             )}
@@ -230,11 +263,28 @@ const ProviderDashboard = () => {
                     <div key={listing.id} className="listing-item">
                       <img
                         src={
-                          listing.photo_url || "https://via.placeholder.com/300"
+                          listing.photo_url
+                            ? `http://localhost:3001/${listing.photo_url}`
+                            : "https://via.placeholder.com/300"
                         }
                         alt={listing.title}
                         className="listing-image"
                       />
+
+                      {/* ✅ GALLERY PHOTOS */}
+                      {listing.gallery_photos?.length > 0 && (
+                        <div className="gallery-preview">
+                          {listing.gallery_photos.map((img, i) => (
+                            <img
+                              key={i}
+                              src={`http://localhost:3001/${img}`}
+                              alt={`Gallery ${i}`}
+                              className="gallery-thumbnail"
+                            />
+                          ))}
+                        </div>
+                      )}
+
                       <div className="listing-info">
                         <h4>{listing.title}</h4>
                         <p>${listing.price}/month</p>

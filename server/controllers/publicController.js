@@ -8,10 +8,12 @@ const jwt = require("jsonwebtoken");
 exports.register = async (req, res) => {
   try {
     const {
-      name,
+      username,
       email,
       password,
+      fullname,
       gender,
+      age,
       dateOfBirth,
       role,
       phone_number,
@@ -20,7 +22,6 @@ exports.register = async (req, res) => {
       budgetMin,
       budgetMax,
       moveInDate,
-      age,
       children,
       description,
       homeData, // Only for provider
@@ -28,12 +29,11 @@ exports.register = async (req, res) => {
 
     // Validate required user fields
     if (
-      !name ||
+      !username ||
       !email ||
       !password ||
       !gender ||
       !role ||
-      !dateOfBirth ||
       !age
     ) {
       return res.status(400).json({ error: "Missing required user fields" });
@@ -69,9 +69,10 @@ exports.register = async (req, res) => {
 
     // Create user
     const newUser = await User.create({
-      name,
+      username,
       email,
       password: hashedPassword,
+      fullname,
       gender,
       dateOfBirth,
       role,
@@ -178,7 +179,7 @@ exports.listings = async (req, res) => {
         {
           model: User,
           as: "provider",
-          attributes: ["id", "name", "email"],
+          attributes: ["id", "fullname", "email"],
         },
       ],
     });

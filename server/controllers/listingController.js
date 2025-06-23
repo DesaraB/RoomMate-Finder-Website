@@ -8,7 +8,7 @@ const getAllListings = async (req, res) => {
         {
           model: User,
           as: "provider",
-          attributes: ["id", "name", "profile_picture_url"],
+          attributes: ["id", "fullname", "profile_picture_url"],
         },
       ],
     });
@@ -29,7 +29,7 @@ const getListingById = async (req, res) => {
         {
           model: User,
           as: "provider",
-          attributes: ["id", "name", "profile_picture_url"],
+          attributes: ["id", "fullname", "profile_picture_url"],
         },
       ],
     });
@@ -56,7 +56,7 @@ const getListingsByUser = async (req, res) => {
         {
           model: User,
           as: "provider",
-          attributes: ["id", "name", "profile_picture_url"],
+          attributes: ["id", "fullname", "profile_picture_url"],
         },
       ],
     });
@@ -82,8 +82,17 @@ const createListing = async (req, res) => {
       amenities,
       available_from,
       lease_term,
-      photo_url,
     } = req.body;
+
+    const coverPhoto =
+      req.files?.cover_photo?.[0]?.path
+        .replace(/\\/g, "/")
+        .replace("public/", "") || null;
+
+    const galleryPhotos =
+      req.files?.gallery_photos?.map((file) =>
+        file.path.replace(/\\/g, "/").replace("public/", "")
+      ) || [];
 
     const newListing = await Listing.create({
       provider_id,
@@ -97,7 +106,8 @@ const createListing = async (req, res) => {
       amenities,
       available_from,
       lease_term,
-      photo_url,
+      photo_url: coverPhoto, // Store the cover photo path
+      gallery_photos: galleryPhotos, // Stored as JSON string (thanks to model's getter/setter)
     });
 
     res.status(201).json(newListing);

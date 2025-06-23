@@ -14,7 +14,7 @@ exports.getApplicationsForSeeker = async (req, res) => {
           include: {
             model: User,
             as: "provider",
-            attributes: ["id", "name", "email", "phone_number"],
+            attributes: ["id", "fullname", "email", "phone_number"],
           },
         },
       ],
@@ -130,13 +130,13 @@ exports.getApplicationsForProvider = async (req, res) => {
           include: {
             model: User,
             as: "provider",
-            attributes: ["id", "name", "email"],
+            attributes: ["id", "fullname", "email"],
           },
         },
         {
           model: User,
           as: "seeker",
-          attributes: ["id", "name", "email", "profile_picture_url"],
+          attributes: ["id", "fullname", "email", "profile_picture_url"],
         },
       ],
       order: [["createdAt", "DESC"]],

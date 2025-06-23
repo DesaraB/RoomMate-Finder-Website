@@ -23,7 +23,7 @@ const UpdateProfile = () => {
         const user = res.data;
 
         setFormData({
-          name: user.name || "",
+          fullname: user.fullname || "",
           email: user.email || "",
           profile_picture_url: user.profile_picture_url || "",
           location: user.location || "",
@@ -134,12 +134,12 @@ const UpdateProfile = () => {
       <form onSubmit={handleSubmit} className="profile-form">
         <div className="form-group floating">
           <input
-            name="name"
-            value={formData.name}
+            name="fullname"
+            value={formData.fullname}
             onChange={handleChange}
-            placeholder="Name"
+            placeholder="fullname"
           />
-          <label>Name</label>
+          <label>Fullname</label>
         </div>
 
         <div className="form-group floating">

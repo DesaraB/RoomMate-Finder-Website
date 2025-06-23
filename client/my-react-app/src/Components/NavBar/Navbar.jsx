@@ -53,7 +53,7 @@ export const Navbar = () => {
 
       <div className="nav-center">
         <ul className="nav-links">
-          {!authUser.name && (
+          {!authUser.fullname && (
             <li>
               <Link to="/">Home</Link>
             </li>
@@ -74,7 +74,7 @@ export const Navbar = () => {
       </div>
 
       <div className="nav-right">
-        {authUser.name ? (
+        {authUser.fullname ? (
           <div className="hamburger-container">
             <button
               className="hamburger-btn"

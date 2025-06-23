@@ -71,7 +71,7 @@ function SeekerRegistration() {
 
       // Combine data for API request - matching your userController structure
       const userData = {
-        name: formData.name,
+        fullname: formData.name,
         email: formData.email,
         password: formData.password,
         gender: formData.gender,

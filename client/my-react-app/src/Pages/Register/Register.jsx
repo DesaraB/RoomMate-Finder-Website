@@ -1,47 +1,49 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './register.css'; // Make sure to import your CSS file
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuthContext } from "../../Context/AuthContext";
+import "./register.css"; // Make sure to import your CSS file
 
 function Register() {
+  const { registerUser } = useAuthContext();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    name: '',
-    role: 'seeker', // Default to seeker
-    gender: '',
-    age: '',
-    phone_number: '',
-    description: '',
-    location: ''
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    fullname: "",
+    role: "seeker", // Default to seeker
+    gender: "",
+    age: "",
+    phone_number: "",
+    description: "",
+    location: "",
   });
-  
+
   // Additional fields for seekers
   const [seekerData, setSeekerData] = useState({
-    budgetMin: '',
-    budgetMax: '',
-    moveInDate: '',
-    children: 'No children'
+    budgetMin: "",
+    budgetMax: "",
+    moveInDate: "",
+    children: "No children",
   });
-  
+
   // Additional fields for providers (home details)
   const [providerData, setProviderData] = useState({
-    homeTitle: '',
-    homeDescription: '',
-    homeLocation: '',
-    homePrice: '',
-    bedrooms: '',
-    bathrooms: '',
-    propertyType: '',
-    availableFrom: '',
-    leaseTerm: '',
-    amenities: '',
-    photoUrl: ''
+    homeTitle: "",
+    homeDescription: "",
+    homeLocation: "",
+    homePrice: "",
+    bedrooms: "",
+    bathrooms: "",
+    propertyType: "",
+    availableFrom: "",
+    leaseTerm: "",
+    amenities: "",
+    photoUrl: "",
   });
-  
-  const [error, setError] = useState('');
+
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -51,7 +53,7 @@ function Register() {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value
+      [name]: value,
     });
   };
 
@@ -60,7 +62,7 @@ function Register() {
     const { name, value } = e.target;
     setSeekerData({
       ...seekerData,
-      [name]: value
+      [name]: value,
     });
   };
 
@@ -69,57 +71,73 @@ function Register() {
     const { name, value } = e.target;
     setProviderData({
       ...providerData,
-      [name]: value
+      [name]: value,
     });
   };
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setIsLoading(true);
 
     try {
       // Validate form
-      if (!formData.username || !formData.email || !formData.password || !formData.name || !formData.gender) {
-        setError('Please fill in all required fields');
+      if (
+        !formData.username ||
+        !formData.email ||
+        !formData.password ||
+        !formData.fullname ||
+        !formData.gender
+      ) {
+        setError("Please fill in all required fields");
         setIsLoading(false);
         return;
       }
 
       if (formData.password !== formData.confirmPassword) {
-        setError('Passwords do not match');
+        setError("Passwords do not match");
         setIsLoading(false);
         return;
       }
 
       // Combine data for API request
       const userData = {
-        ...formData
+        ...formData,
       };
 
       // Add seeker-specific fields if role is seeker
-      if (formData.role === 'seeker') {
-        userData.budgetMin = seekerData.budgetMin ? parseInt(seekerData.budgetMin) : null;
-        userData.budgetMax = seekerData.budgetMax ? parseInt(seekerData.budgetMax) : null;
+      if (formData.role === "seeker") {
+        userData.budgetMin = seekerData.budgetMin
+          ? parseInt(seekerData.budgetMin)
+          : null;
+        userData.budgetMax = seekerData.budgetMax
+          ? parseInt(seekerData.budgetMax)
+          : null;
         userData.moveInDate = seekerData.moveInDate || null;
         userData.children = seekerData.children;
       }
 
       // Add provider-specific fields if role is provider
-      if (formData.role === 'provider') {
+      if (formData.role === "provider") {
         userData.homeData = {
           title: providerData.homeTitle,
           description: providerData.homeDescription,
           location: providerData.homeLocation,
-          price: providerData.homePrice ? parseFloat(providerData.homePrice) : null,
-          bedrooms: providerData.bedrooms ? parseInt(providerData.bedrooms) : null,
-          bathrooms: providerData.bathrooms ? parseFloat(providerData.bathrooms) : null,
+          price: providerData.homePrice
+            ? parseFloat(providerData.homePrice)
+            : null,
+          bedrooms: providerData.bedrooms
+            ? parseInt(providerData.bedrooms)
+            : null,
+          bathrooms: providerData.bathrooms
+            ? parseFloat(providerData.bathrooms)
+            : null,
           property_type: providerData.propertyType,
           available_from: providerData.availableFrom || null,
           lease_term: providerData.leaseTerm,
           amenities: providerData.amenities,
-          photo_url: providerData.photoUrl
+          photo_url: providerData.photoUrl,
         };
       }
 
@@ -127,31 +145,25 @@ function Register() {
       delete userData.confirmPassword;
 
       // Send registration request to your backend
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(userData)
-      });
+      const response = await registerUser(formData);
 
       if (!response.ok) {
-        throw new Error('Registration failed');
+        throw new Error("Registration failed");
       }
 
       const result = await response.json();
-      
+
       // Store user data and redirect
-      localStorage.setItem('user', JSON.stringify(result));
-      
+      localStorage.setItem("user", JSON.stringify(result));
+
       // Redirect based on role
-      if (result.role === 'provider') {
-        navigate('/provider-dashboard');
+      if (result.role === "provider") {
+        navigate("/provider-dashboard");
       } else {
-        navigate('/seeker-dashboard');
+        navigate("/seeker-dashboard");
       }
     } catch (err) {
-      setError(err.message || 'Registration failed. Please try again.');
+      setError(err.message || "Registration failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -166,15 +178,13 @@ function Register() {
             <p>Find your perfect living situation today</p>
           </div>
 
-          {error && (
-            <div className="error-message">{error}</div>
-          )}
-          
+          {error && <div className="error-message">{error}</div>}
+
           <form className="register-form" onSubmit={handleSubmit}>
             {/* Account Information */}
             <div className="form-section">
               <h3 className="section-title">Account Information</h3>
-              
+
               <div className="form-group">
                 <label htmlFor="username">Username *</label>
                 <div className="input-wrapper">
@@ -206,7 +216,7 @@ function Register() {
                   />
                 </div>
               </div>
-              
+
               <div className="password-row">
                 <div className="form-group">
                   <label htmlFor="password">Password *</label>
@@ -230,7 +240,7 @@ function Register() {
                     </button>
                   </div>
                 </div>
-                
+
                 <div className="form-group">
                   <label htmlFor="confirmPassword">Confirm Password *</label>
                   <div className="input-wrapper">
@@ -247,7 +257,9 @@ function Register() {
                     <button
                       type="button"
                       className="password-toggle"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
                     >
                       {showConfirmPassword ? "🙈" : "👁"}
                     </button>
@@ -255,27 +267,27 @@ function Register() {
                 </div>
               </div>
             </div>
-            
+
             {/* Personal Information */}
             <div className="form-section">
               <h3 className="section-title">Personal Information</h3>
-              
+
               <div className="form-group">
-                <label htmlFor="name">Full Name *</label>
+                <label htmlFor="fullname">Full Name *</label>
                 <div className="input-wrapper">
                   <span className="input-icon icon-person"></span>
                   <input
-                    id="name"
-                    name="name"
+                    id="fullname"
+                    name="fullname"
                     type="text"
                     required
                     placeholder="Enter your full name"
-                    value={formData.name}
+                    value={formData.fullname}
                     onChange={handleChange}
                   />
                 </div>
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="role">I am a *</label>
                 <div className="radio-group">
@@ -285,7 +297,7 @@ function Register() {
                       id="seeker"
                       name="role"
                       value="seeker"
-                      checked={formData.role === 'seeker'}
+                      checked={formData.role === "seeker"}
                       onChange={handleChange}
                     />
                     <label htmlFor="seeker" className="radio-label">
@@ -296,14 +308,14 @@ function Register() {
                       </div>
                     </label>
                   </div>
-                  
+
                   <div className="radio-option">
                     <input
                       type="radio"
                       id="provider"
                       name="role"
                       value="provider"
-                      checked={formData.role === 'provider'}
+                      checked={formData.role === "provider"}
                       onChange={handleChange}
                     />
                     <label htmlFor="provider" className="radio-label">
@@ -316,7 +328,7 @@ function Register() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="personal-row">
                 <div className="form-group">
                   <label htmlFor="gender">Gender *</label>
@@ -335,7 +347,7 @@ function Register() {
                     </select>
                   </div>
                 </div>
-                
+
                 <div className="form-group">
                   <label htmlFor="age">Age</label>
                   <div className="input-wrapper">
@@ -353,7 +365,7 @@ function Register() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="phone_number">Phone Number</label>
                 <div className="input-wrapper">
@@ -368,7 +380,7 @@ function Register() {
                   />
                 </div>
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="location">Location</label>
                 <div className="input-wrapper">
@@ -383,7 +395,7 @@ function Register() {
                   />
                 </div>
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="description">About Me</label>
                 <div className="textarea-wrapper">
@@ -398,12 +410,12 @@ function Register() {
                 </div>
               </div>
             </div>
-            
+
             {/* Seeker Preferences */}
-            {formData.role === 'seeker' && (
+            {formData.role === "seeker" && (
               <div className="form-section seeker-section">
                 <h3 className="section-title">Your Preferences</h3>
-                
+
                 <div className="grid-row">
                   <div className="form-group">
                     <label htmlFor="budgetMin">Min Budget ($)</label>
@@ -420,7 +432,7 @@ function Register() {
                       />
                     </div>
                   </div>
-                  
+
                   <div className="form-group">
                     <label htmlFor="budgetMax">Max Budget ($)</label>
                     <div className="input-wrapper">
@@ -437,7 +449,7 @@ function Register() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="form-group">
                   <label htmlFor="moveInDate">Preferred Move-In Date</label>
                   <div className="input-wrapper">
@@ -451,7 +463,7 @@ function Register() {
                     />
                   </div>
                 </div>
-                
+
                 <div className="form-group">
                   <label htmlFor="children">Children</label>
                   <div className="input-wrapper">
@@ -464,18 +476,20 @@ function Register() {
                     >
                       <option value="No children">No children</option>
                       <option value="Have children">Have children</option>
-                      <option value="Expecting children">Expecting children</option>
+                      <option value="Expecting children">
+                        Expecting children
+                      </option>
                     </select>
                   </div>
                 </div>
               </div>
             )}
-            
+
             {/* Provider Property Details */}
-            {formData.role === 'provider' && (
+            {formData.role === "provider" && (
               <div className="form-section provider-section">
                 <h3 className="section-title">Property Details</h3>
-                
+
                 <div className="form-group">
                   <label htmlFor="homeTitle">Property Title *</label>
                   <div className="input-wrapper">
@@ -491,7 +505,7 @@ function Register() {
                     />
                   </div>
                 </div>
-                
+
                 <div className="form-group">
                   <label htmlFor="homeDescription">Property Description</label>
                   <div className="textarea-wrapper">
@@ -505,7 +519,7 @@ function Register() {
                     />
                   </div>
                 </div>
-                
+
                 <div className="grid-row">
                   <div className="form-group">
                     <label htmlFor="homeLocation">Property Location *</label>
@@ -522,7 +536,7 @@ function Register() {
                       />
                     </div>
                   </div>
-                  
+
                   <div className="form-group">
                     <label htmlFor="homePrice">Monthly Rent ($) *</label>
                     <div className="input-wrapper">
@@ -540,7 +554,7 @@ function Register() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="grid-row-3">
                   <div className="form-group">
                     <label htmlFor="bedrooms">Bedrooms *</label>
@@ -558,7 +572,7 @@ function Register() {
                       />
                     </div>
                   </div>
-                  
+
                   <div className="form-group">
                     <label htmlFor="bathrooms">Bathrooms *</label>
                     <div className="input-wrapper">
@@ -576,7 +590,7 @@ function Register() {
                       />
                     </div>
                   </div>
-                  
+
                   <div className="form-group">
                     <label htmlFor="propertyType">Property Type *</label>
                     <div className="input-wrapper">
@@ -597,7 +611,7 @@ function Register() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="grid-row">
                   <div className="form-group">
                     <label htmlFor="availableFrom">Available From</label>
@@ -612,7 +626,7 @@ function Register() {
                       />
                     </div>
                   </div>
-                  
+
                   <div className="form-group">
                     <label htmlFor="leaseTerm">Lease Term</label>
                     <div className="input-wrapper">
@@ -628,7 +642,7 @@ function Register() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="form-group">
                   <label htmlFor="amenities">Amenities</label>
                   <div className="textarea-wrapper">
@@ -642,7 +656,7 @@ function Register() {
                     />
                   </div>
                 </div>
-                
+
                 <div className="form-group">
                   <label htmlFor="photoUrl">Property Photo URL</label>
                   <div className="input-wrapper">
@@ -659,22 +673,22 @@ function Register() {
                 </div>
               </div>
             )}
-            
+
             <button
               type="submit"
               disabled={isLoading}
-              className={`register-btn ${isLoading ? 'loading' : ''}`}
+              className={`register-btn ${isLoading ? "loading" : ""}`}
             >
-              {isLoading ? 'Creating your account...' : 'Create Account'}
+              {isLoading ? "Creating your account..." : "Create Account"}
             </button>
           </form>
-          
+
           <div className="register-footer">
             <p>
-              Already have an account?{' '}
-              <button 
+              Already have an account?{" "}
+              <button
                 className="signin-link"
-                onClick={() => navigate('/login')}
+                onClick={() => navigate("/login")}
               >
                 Sign in here
               </button>

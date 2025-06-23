@@ -32,6 +32,17 @@ const Listing = sequelize.define(
       allowNull: false,
       defaultValue: DataTypes.NOW,
     },
+    gallery_photos: {
+      type: DataTypes.TEXT, // Store as JSON string
+      allowNull: true,
+      get() {
+        const rawValue = this.getDataValue("gallery_photos");
+        return rawValue ? JSON.parse(rawValue) : [];
+      },
+      set(value) {
+        this.setDataValue("gallery_photos", JSON.stringify(value));
+      },
+    },
   },
   {
     tableName: "listings",
