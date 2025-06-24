@@ -9,7 +9,7 @@ const ProviderDashboard = () => {
   const navigate = useNavigate();
 
   const providerData = {
-    name: authUser.name || "Provider",
+    name: authUser.fullname || "Provider",
     profileImage: authUser.profile_picture_url
       ? `http://localhost:3001${authUser.profile_picture_url}`
       : "https://images.unsplash.com/photo-1494790108755-2616b612d1cf?w=100",
