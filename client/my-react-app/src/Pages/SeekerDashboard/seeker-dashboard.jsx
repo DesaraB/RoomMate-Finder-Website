@@ -123,12 +123,14 @@ const SeekerDashboard = () => {
                   <div key={application.id} className="application-item">
                     <img
                       src={
-                        application.listing?.photo_url ||
-                        "https://via.placeholder.com/80"
+                        application.listing?.photo_url
+                          ? `http://localhost:3001/${application.listing.photo_url}`
+                          : "https://via.placeholder.com/80"
                       }
                       alt={application.listing?.title}
                       className="property-image"
                     />
+
                     <div className="application-info">
                       <h4>{application.listing?.title}</h4>
                       <p>${application.listing?.price}/month</p>
@@ -179,12 +181,14 @@ const SeekerDashboard = () => {
                   <div key={room.id} className="saved-room-item">
                     <img
                       src={
-                        room.listing?.photo_url ||
-                        "https://via.placeholder.com/80"
+                        room.listing?.photo_url
+                          ? `http://localhost:3001/${room.listing.photo_url}`
+                          : "https://via.placeholder.com/80"
                       }
                       alt={room.listing?.title}
                       className="room-image"
                     />
+
                     <div className="room-info">
                       <h4>{room.listing?.title || "No title"}</h4>
                       <p>${room.listing?.price || "N/A"}/month</p>
