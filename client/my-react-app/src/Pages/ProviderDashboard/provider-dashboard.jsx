@@ -299,7 +299,9 @@ const ProviderDashboard = () => {
                       <img
                         src={
                           listing.photo_url
-                            ? `http://localhost:3001/${listing.photo_url}`
+                            ? `http://localhost:3001/${
+                                listing.photo_url
+                              }?t=${Date.now()}`
                             : "https://via.placeholder.com/300"
                         }
                         alt={listing.title}

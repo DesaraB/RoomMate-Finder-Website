@@ -120,8 +120,26 @@ const updateListing = async (req, res) => {
     const listingId = parseInt(req.params.id);
     const updates = req.body;
 
+    // Parse amenities
     if (updates.amenities && Array.isArray(updates.amenities)) {
       updates.amenities = updates.amenities.join(",");
+    }
+
+    // ✅ Add cover photo if uploaded
+    const coverPhoto =
+      req.files?.cover_photo?.[0]?.path?.replace(/\\/g, "/").replace("public/", "") || null;
+    if (coverPhoto) {
+      updates.photo_url = coverPhoto;
+    }
+
+    // ✅ Add gallery photos if uploaded
+    const galleryPhotos =
+      req.files?.gallery_photos?.map((file) =>
+        file.path.replace(/\\/g, "/").replace("public/", "")
+      ) || [];
+
+    if (galleryPhotos.length > 0) {
+      updates.gallery_photos = galleryPhotos;
     }
 
     const [updatedRows] = await Listing.update(updates, {
@@ -139,6 +157,7 @@ const updateListing = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
 
 // Delete listing
 const deleteListing = async (req, res) => {
