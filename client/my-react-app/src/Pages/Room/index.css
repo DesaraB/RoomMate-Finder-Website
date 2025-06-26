@@ -116,3 +116,18 @@
   transform: scale(1.05);
   cursor: pointer;
 }
+.amenities-badge-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 5px;
+}
+
+.amenity-badge {
+  background-color: #f0f4f8;
+  color: #333;
+  padding: 6px 10px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  border: 1px solid #ccc;
+}

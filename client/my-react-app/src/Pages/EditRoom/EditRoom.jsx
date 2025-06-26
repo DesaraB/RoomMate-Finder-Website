@@ -43,9 +43,12 @@ const EditRoom = () => {
     const fetchRoom = async () => {
       try {
         setIsLoading(true);
-        const res = await axios.get(`http://localhost:3001/api/listings/${id}`, {
-          withCredentials: true,
-        });
+        const res = await axios.get(
+          `http://localhost:3001/api/listings/${id}`,
+          {
+            withCredentials: true,
+          }
+        );
         setRoom(res.data);
         setFormData({
           title: res.data.title || "",
@@ -61,7 +64,29 @@ const EditRoom = () => {
           photo_url: res.data.photo_url || "",
           gallery_photos: res.data.gallery_photos || [],
         });
-        setSelectedAmenities(res.data.amenities || []);
+        const normalizeAmenities = (value) => {
+          if (!value) return [];
+
+          if (Array.isArray(value)) {
+            return [...new Set(value.map((a) => a.trim()))];
+          }
+
+          if (typeof value === "string") {
+            try {
+              const parsed = JSON.parse(value);
+              if (Array.isArray(parsed)) {
+                return [...new Set(parsed.map((a) => a.trim()))];
+              }
+            } catch {
+              // fallback for CSV string
+              return [...new Set(value.split(",").map((a) => a.trim()))];
+            }
+          }
+
+          return [];
+        };
+
+        setSelectedAmenities(normalizeAmenities(res.data.amenities));
       } catch (err) {
         console.error("Error fetching room:", err);
         showNotification("Could not load room", "error");
@@ -79,9 +104,9 @@ const EditRoom = () => {
   };
 
   const handleAmenityToggle = (amenityId) => {
-    setSelectedAmenities(prev => {
+    setSelectedAmenities((prev) => {
       if (prev.includes(amenityId)) {
-        return prev.filter(id => id !== amenityId);
+        return prev.filter((id) => id !== amenityId);
       } else {
         return [...prev, amenityId];
       }
@@ -99,22 +124,24 @@ const EditRoom = () => {
   };
 
   const removeGalleryPhoto = (index) => {
-    const updatedGallery = formData.gallery_photos.filter((_, i) => i !== index);
-    setFormData(prev => ({ ...prev, gallery_photos: updatedGallery }));
+    const updatedGallery = formData.gallery_photos.filter(
+      (_, i) => i !== index
+    );
+    setFormData((prev) => ({ ...prev, gallery_photos: updatedGallery }));
   };
 
   const showNotification = (message, type = "success") => {
-    const notification = document.createElement('div');
+    const notification = document.createElement("div");
     notification.className = `notification notification-${type}`;
     notification.textContent = message;
     document.body.appendChild(notification);
-    
+
     setTimeout(() => {
-      notification.classList.add('show');
+      notification.classList.add("show");
     }, 100);
-    
+
     setTimeout(() => {
-      notification.classList.remove('show');
+      notification.classList.remove("show");
       setTimeout(() => {
         document.body.removeChild(notification);
       }, 300);
@@ -122,14 +149,29 @@ const EditRoom = () => {
   };
 
   const calculateProgress = () => {
-    const requiredFields = ['title', 'description', 'location', 'price', 'bedrooms', 'bathrooms', 'property_type'];
-    const filledRequired = requiredFields.filter(field => formData[field] !== "").length;
-    const optionalFields = ['amenities', 'available_from', 'lease_term', 'photo_url'];
-    const filledOptional = optionalFields.filter(field => {
+    const requiredFields = [
+      "title",
+      "description",
+      "location",
+      "price",
+      "bedrooms",
+      "bathrooms",
+      "property_type",
+    ];
+    const filledRequired = requiredFields.filter(
+      (field) => formData[field] !== ""
+    ).length;
+    const optionalFields = [
+      "amenities",
+      "available_from",
+      "lease_term",
+      "photo_url",
+    ];
+    const filledOptional = optionalFields.filter((field) => {
       const value = formData[field];
       return value && (Array.isArray(value) ? value.length > 0 : value !== "");
     }).length;
-    
+
     const total = requiredFields.length + optionalFields.length;
     const filled = filledRequired + filledOptional;
     return Math.round((filled / total) * 100);
@@ -138,36 +180,40 @@ const EditRoom = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     try {
       const formDataToSend = new FormData();
-      
+
       // Append text fields
-      Object.keys(formData).forEach(key => {
-        if (key !== 'gallery_photos' && formData[key] !== '') {
+      Object.keys(formData).forEach((key) => {
+        if (key !== "gallery_photos" && formData[key] !== "") {
           formDataToSend.append(key, formData[key]);
         }
       });
-      
-      formDataToSend.append('amenities', selectedAmenities.join(','));
-      
+
+      formDataToSend.append("amenities", selectedAmenities.join(","));
+
       // Append cover photo if new one selected
       if (coverFile) {
-        formDataToSend.append('cover_photo', coverFile);
+        formDataToSend.append("cover_photo", coverFile);
       }
-      
+
       // Append gallery photos if new ones selected
-      galleryFiles.forEach(file => {
-        formDataToSend.append('gallery_photos', file);
+      galleryFiles.forEach((file) => {
+        formDataToSend.append("gallery_photos", file);
       });
-      
-      await axios.put(`http://localhost:3001/api/listings/${id}`, formDataToSend, {
-        withCredentials: true,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      
+
+      await axios.put(
+        `http://localhost:3001/api/listings/${id}`,
+        formDataToSend,
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
       showNotification("Room updated successfully!", "success");
       setTimeout(() => navigate("/provider-dashboard"), 1500);
     } catch (err) {
@@ -206,8 +252,13 @@ const EditRoom = () => {
       <div className="error-container">
         <div className="error-icon">⚠️</div>
         <h2>Room Not Found</h2>
-        <p>The room listing you're looking for doesn't exist or has been removed.</p>
-        <button onClick={() => navigate("/provider-dashboard")} className="btn btn-primary">
+        <p>
+          The room listing you're looking for doesn't exist or has been removed.
+        </p>
+        <button
+          onClick={() => navigate("/provider-dashboard")}
+          className="btn btn-primary"
+        >
           ← Back to Dashboard
         </button>
       </div>
@@ -220,14 +271,20 @@ const EditRoom = () => {
     <div className="edit-room-container">
       {/* Compact Header */}
       <header className="page-header">
-        <button onClick={() => navigate("/provider-dashboard")} className="back-btn">
+        <button
+          onClick={() => navigate("/provider-dashboard")}
+          className="back-btn"
+        >
           ← Back
         </button>
         <h1>Edit Room</h1>
         <div className="progress-mini">
           <span>{progress}%</span>
           <div className="progress-bar-mini">
-            <div className="progress-fill-mini" style={{ width: `${progress}%` }}></div>
+            <div
+              className="progress-fill-mini"
+              style={{ width: `${progress}%` }}
+            ></div>
           </div>
         </div>
       </header>
@@ -235,7 +292,6 @@ const EditRoom = () => {
       {/* Compact Form */}
       <div className="form-container">
         <form className="edit-form" onSubmit={handleSubmit}>
-          
           {/* Basic Info Section */}
           <div className="form-section">
             <h3>📝 Basic Information</h3>
@@ -335,17 +391,32 @@ const EditRoom = () => {
           {/* Amenities Section */}
           <div className="form-section">
             <h3>✨ Amenities</h3>
+
+            {selectedAmenities.length > 0 && (
+              <div className="selected-amenities-preview">
+                <strong>Selected:</strong>{" "}
+                {selectedAmenities.map((a, i) => (
+                  <span key={i} className="amenity-preview-chip">
+                    {amenityOptions.find((opt) => opt.id === a)?.label || a}
+                    {i < selectedAmenities.length - 1 && ", "}
+                  </span>
+                ))}
+              </div>
+            )}
+
             <div className="amenities-compact">
               {amenityOptions.map((amenity) => (
                 <label
                   key={amenity.id}
-                  className={`amenity-chip ${selectedAmenities.includes(amenity.id) ? 'selected' : ''}`}
+                  className={`amenity-chip ${
+                    selectedAmenities.includes(amenity.id) ? "selected" : ""
+                  }`}
                 >
                   <input
                     type="checkbox"
                     checked={selectedAmenities.includes(amenity.id)}
-                    onChange={(e) => handleAmenityToggle(amenity.id)}
-                    style={{ display: 'none' }}
+                    onChange={() => handleAmenityToggle(amenity.id)}
+                    style={{ display: "none" }}
                   />
                   <span className="amenity-icon">{amenity.icon}</span>
                   <span>{amenity.label}</span>
@@ -357,16 +428,16 @@ const EditRoom = () => {
           {/* Photos Section */}
           <div className="form-section">
             <h3>📷 Photos</h3>
-            
+
             {/* Cover Photo */}
             <div className="photo-section">
               <label className="photo-label">Cover Photo</label>
               <div className="photo-upload-area">
                 {formData.photo_url && (
                   <div className="current-photo">
-                    <img 
-                      src={`http://localhost:3001/${formData.photo_url}`} 
-                      alt="Current cover" 
+                    <img
+                      src={`http://localhost:3001/${formData.photo_url}`}
+                      alt="Current cover"
                       className="photo-preview"
                     />
                     <span className="photo-caption">Current Cover</span>
@@ -381,7 +452,7 @@ const EditRoom = () => {
                     id="cover-upload"
                   />
                   <label htmlFor="cover-upload" className="upload-btn">
-                    📎 {coverFile ? coverFile.name : 'Choose New Cover'}
+                    📎 {coverFile ? coverFile.name : "Choose New Cover"}
                   </label>
                 </div>
               </div>
@@ -390,7 +461,7 @@ const EditRoom = () => {
             {/* Gallery Photos */}
             <div className="photo-section">
               <label className="photo-label">Gallery Photos</label>
-              
+
               {/* Current Gallery */}
               {formData.gallery_photos?.length > 0 && (
                 <div className="gallery-current">
@@ -398,8 +469,8 @@ const EditRoom = () => {
                   <div className="gallery-grid">
                     {formData.gallery_photos.map((photo, index) => (
                       <div key={index} className="gallery-item">
-                        <img 
-                          src={`http://localhost:3001/${photo}`} 
+                        <img
+                          src={`http://localhost:3001/${photo}`}
                           alt={`Gallery ${index + 1}`}
                           className="gallery-thumb"
                         />
@@ -415,7 +486,7 @@ const EditRoom = () => {
                   </div>
                 </div>
               )}
-              
+
               {/* Add New Gallery Photos */}
               <div className="upload-zone">
                 <input
@@ -427,7 +498,10 @@ const EditRoom = () => {
                   id="gallery-upload"
                 />
                 <label htmlFor="gallery-upload" className="upload-btn">
-                  🖼️ {galleryFiles.length > 0 ? `${galleryFiles.length} files selected` : 'Add More Photos'}
+                  🖼️{" "}
+                  {galleryFiles.length > 0
+                    ? `${galleryFiles.length} files selected`
+                    : "Add More Photos"}
                 </label>
               </div>
             </div>
@@ -435,16 +509,16 @@ const EditRoom = () => {
 
           {/* Action Buttons */}
           <div className="form-actions">
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               disabled={isSubmitting}
               className="btn btn-save"
             >
               {isSubmitting ? "Saving..." : "💾 Save Changes"}
             </button>
-            
-            <button 
-              type="button" 
+
+            <button
+              type="button"
               onClick={() => setShowDeleteModal(true)}
               className="btn btn-delete"
             >
@@ -456,12 +530,18 @@ const EditRoom = () => {
 
       {/* Delete Modal */}
       {showDeleteModal && (
-        <div className="modal-overlay" onClick={() => setShowDeleteModal(false)}>
+        <div
+          className="modal-overlay"
+          onClick={() => setShowDeleteModal(false)}
+        >
           <div className="modal-compact" onClick={(e) => e.stopPropagation()}>
             <h3>Delete Listing?</h3>
             <p>This action cannot be undone.</p>
             <div className="modal-actions">
-              <button onClick={() => setShowDeleteModal(false)} className="btn btn-cancel">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="btn btn-cancel"
+              >
                 Cancel
               </button>
               <button onClick={handleDelete} className="btn btn-delete">

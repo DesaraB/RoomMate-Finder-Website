@@ -18,7 +18,24 @@ const Listing = sequelize.define(
       type: DataTypes.ENUM("apartment", "house", "condo", "studio"),
       allowNull: false,
     },
-    amenities: { type: DataTypes.STRING, allowNull: true },
+    amenities: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      get() {
+        const raw = this.getDataValue("amenities");
+        return raw ? raw.split(",").map((a) => a.trim()) : [];
+      },
+      set(value) {
+        if (Array.isArray(value)) {
+          this.setDataValue("amenities", value.join(","));
+        } else if (typeof value === "string") {
+          this.setDataValue("amenities", value);
+        } else {
+          this.setDataValue("amenities", "");
+        }
+      },
+    },
+
     available_from: { type: DataTypes.DATE, allowNull: false },
     lease_term: { type: DataTypes.STRING, allowNull: true },
     photo_url: { type: DataTypes.STRING, allowNull: true },

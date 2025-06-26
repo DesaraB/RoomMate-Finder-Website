@@ -49,7 +49,6 @@ const getListingById = async (req, res) => {
 const getListingsByUser = async (req, res) => {
   try {
     const userId = parseInt(req.params.providerId);
-    console.log(userId);
     const listings = await Listing.findAll({
       where: { provider_id: userId },
       include: [
@@ -85,9 +84,7 @@ const createListing = async (req, res) => {
     } = req.body;
 
     const coverPhoto =
-      req.files?.cover_photo?.[0]?.path
-        .replace(/\\/g, "/")
-        .replace("public/", "") || null;
+      req.files?.cover_photo?.[0]?.path?.replace(/\\/g, "/").replace("public/", "") || null;
 
     const galleryPhotos =
       req.files?.gallery_photos?.map((file) =>
@@ -103,11 +100,11 @@ const createListing = async (req, res) => {
       bedrooms,
       bathrooms,
       property_type,
-      amenities,
+      amenities: Array.isArray(amenities) ? amenities.join(",") : amenities,
       available_from,
       lease_term,
-      photo_url: coverPhoto, // Store the cover photo path
-      gallery_photos: galleryPhotos, // Stored as JSON string (thanks to model's getter/setter)
+      photo_url: coverPhoto,
+      gallery_photos: galleryPhotos,
     });
 
     res.status(201).json(newListing);
@@ -122,6 +119,10 @@ const updateListing = async (req, res) => {
   try {
     const listingId = parseInt(req.params.id);
     const updates = req.body;
+
+    if (updates.amenities && Array.isArray(updates.amenities)) {
+      updates.amenities = updates.amenities.join(",");
+    }
 
     const [updatedRows] = await Listing.update(updates, {
       where: { id: listingId },
@@ -156,7 +157,6 @@ const deleteListing = async (req, res) => {
   }
 };
 
-// Export all handlers
 module.exports = {
   getAllListings,
   getListingById,

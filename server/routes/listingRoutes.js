@@ -1,11 +1,11 @@
-// routes/listingRoutes.js
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
 const listingController = require("../controllers/listingController");
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "public/uploads/"); // Make sure this folder exists
+    cb(null, "public/uploads/");
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
@@ -14,6 +14,7 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
+
 // Get all listings
 router.get("/", listingController.getAllListings);
 
@@ -33,8 +34,15 @@ router.post(
   listingController.createListing
 );
 
-// Update a listing
-router.put("/:id", listingController.updateListing);
+// ✅ FIXED: Update a listing (now accepts multipart/form-data)
+router.put(
+  "/:id",
+  upload.fields([
+    { name: "cover_photo", maxCount: 1 },
+    { name: "gallery_photos", maxCount: 10 },
+  ]),
+  listingController.updateListing
+);
 
 // Delete a listing
 router.delete("/:id", listingController.deleteListing);

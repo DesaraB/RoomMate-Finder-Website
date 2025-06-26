@@ -369,4 +369,33 @@
   border-radius: 6px;
   border: 1px solid #ccc;
 }
+.amenities-compact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.amenity-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  font-size: 14px;
+}
+
+.amenity-chip.selected {
+  background-color: #e0f0ff;
+  border-color: #007bff;
+  font-weight: 500;
+}
+
+.amenity-icon {
+  font-size: 16px;
+}
+
 

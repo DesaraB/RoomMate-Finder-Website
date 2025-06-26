@@ -8,6 +8,25 @@ const ProviderDashboard = () => {
   const { authUser } = useAuthContext();
   const navigate = useNavigate();
 
+  const amenityOptions = [
+    { id: "wifi", label: "WiFi", icon: "📶" },
+    { id: "parking", label: "Parking", icon: "🚗" },
+    { id: "gym", label: "Gym", icon: "💪" },
+    { id: "pool", label: "Pool", icon: "🏊" },
+    { id: "ac", label: "Air Conditioning", icon: "❄️" },
+    { id: "laundry", label: "Laundry", icon: "👔" },
+    { id: "kitchen", label: "Kitchen", icon: "🍳" },
+    { id: "pet-friendly", label: "Pet Friendly", icon: "🐕" },
+  ];
+  const [selectedAmenities, setSelectedAmenities] = useState([]);
+  const handleAmenityToggle = (amenityId) => {
+    setSelectedAmenities((prev) =>
+      prev.includes(amenityId)
+        ? prev.filter((id) => id !== amenityId)
+        : [...prev, amenityId]
+    );
+  };
+
   const providerData = {
     name: authUser.fullname || "Provider",
     profileImage: authUser.profile_picture_url
@@ -151,7 +170,7 @@ const ProviderDashboard = () => {
                     "property_type",
                     e.target.property_type.value
                   );
-                  formData.append("amenities", e.target.amenities.value);
+                  formData.append("amenities", selectedAmenities.join(","));
                   formData.append(
                     "available_from",
                     e.target.available_from.value
@@ -233,10 +252,26 @@ const ProviderDashboard = () => {
                   <option value="condo">Condo</option>
                   <option value="studio">Studio</option>
                 </select>
-                <input
-                  name="amenities"
-                  placeholder="Amenities (comma separated)"
-                />
+                <div className="amenities-compact">
+                  {amenityOptions.map((amenity) => (
+                    <label
+                      key={amenity.id}
+                      className={`amenity-chip ${
+                        selectedAmenities.includes(amenity.id) ? "selected" : ""
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedAmenities.includes(amenity.id)}
+                        onChange={() => handleAmenityToggle(amenity.id)}
+                        style={{ display: "none" }}
+                      />
+                      <span className="amenity-icon">{amenity.icon}</span>
+                      <span>{amenity.label}</span>
+                    </label>
+                  ))}
+                </div>
+
                 <input name="available_from" type="date" required />
                 <input name="lease_term" placeholder="Lease Term" />
                 <label>Cover Photo:</label>

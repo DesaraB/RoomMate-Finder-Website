@@ -59,6 +59,18 @@ const Room = () => {
     return <div className="room-loader">Loading room details...</div>;
   if (!room) return <div className="room-not-found">Room not found.</div>;
 
+  const amenityLabels = {
+  wifi: "WiFi",
+  parking: "Parking",
+  gym: "Gym",
+  pool: "Pool",
+  ac: "Air Conditioning",
+  laundry: "Laundry",
+  kitchen: "Kitchen",
+  "pet-friendly": "Pet Friendly",
+};
+
+
   return (
     <div className="room-details-container">
       <div className="room-image-wrapper">
@@ -108,8 +120,19 @@ const Room = () => {
             <strong>Lease Term:</strong> {room.lease_term}
           </p>
           <p>
-            <strong>Amenities:</strong> {room.amenities}
+            <strong>Amenities:</strong>{" "}
+            {Array.isArray(room.amenities)
+              ? room.amenities.map((a, i) => (
+                  <span key={i}>
+                    {amenityLabels[a.trim()] || a.trim()}
+                    {i < room.amenities.length - 1 && ", "}
+                  </span>
+                ))
+              : typeof room.amenities === "string"
+              ? room.amenities
+              : "None"}
           </p>
+
           <p>
             <strong>Available From:</strong>{" "}
             {new Date(room.available_from).toLocaleDateString()}
