@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useRoomContext } from "../../Context/RoomContext";
+import { useAuthContext } from "../../Context/AuthContext";
+
 import "./index.css";
 
 const Room = () => {
@@ -9,6 +11,7 @@ const Room = () => {
   const [room, setRoom] = useState(null);
   const [loading, setLoading] = useState(true);
   const [applied, setApplied] = useState(false);
+  const { authUser } = useAuthContext();
 
   useEffect(() => {
     const loadRoomById = async () => {
@@ -153,13 +156,15 @@ const Room = () => {
         </div>
 
         <div className="room-actions">
-          <button
-            className="apply-now-btn"
-            onClick={handleApply}
-            disabled={applied}
-          >
-            {applied ? "Application Sent" : "Apply Now"}
-          </button>
+          {authUser?.role === "seeker" && (
+            <button
+              className="apply-now-btn"
+              onClick={handleApply}
+              disabled={applied}
+            >
+              {applied ? "Application Sent" : "Apply Now"}
+            </button>
+          )}
         </div>
       </div>
     </div>
