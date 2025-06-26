@@ -132,8 +132,19 @@ const updateListing = async (req, res) => {
       updates.photo_url = coverPhoto;
     }
 
-    // ✅ Add gallery photos if uploaded
-    
+    // ✅ Add new gallery photos if uploaded
+    const newGalleryPhotos =
+      req.files?.gallery_photos?.map((file) =>
+        file.path.replace(/\\/g, "/").replace("public/", "")
+      ) || [];
+
+    // ✅ Fetch existing gallery photos to merge
+    const existingListing = await Listing.findByPk(listingId);
+    const existingGallery = existingListing.gallery_photos || [];
+
+    // ✅ Merge new and old photos
+    const mergedGallery = [...existingGallery, ...newGalleryPhotos];
+    updates.gallery_photos = mergedGallery;
 
     const [updatedRows] = await Listing.update(updates, {
       where: { id: listingId },
@@ -150,6 +161,7 @@ const updateListing = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
 
 
 // Delete listing

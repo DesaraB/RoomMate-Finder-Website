@@ -2,7 +2,6 @@ import axios from "axios";
 
 // ✅ Login with credentials
 const login_user_service = async (values) => {
-  console.log("Sending login request to backend...", values);
   const result = await axios.post(
     "http://localhost:3001/api/users/login",
     values,
