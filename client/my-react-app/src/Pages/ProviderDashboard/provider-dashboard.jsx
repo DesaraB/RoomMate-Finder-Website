@@ -307,20 +307,7 @@ const ProviderDashboard = () => {
                         alt={listing.title}
                         className="listing-image"
                       />
-
-                      {/* ✅ GALLERY PHOTOS */}
-                      {listing.gallery_photos?.length > 0 && (
-                        <div className="gallery-preview">
-                          {listing.gallery_photos.map((img, i) => (
-                            <img
-                              key={i}
-                              src={`http://localhost:3001/${img}`}
-                              alt={`Gallery ${i}`}
-                              className="gallery-thumbnail"
-                            />
-                          ))}
-                        </div>
-                      )}
+                      
 
                       <div className="listing-info">
                         <h4>{listing.title}</h4>

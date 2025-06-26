@@ -133,14 +133,7 @@ const updateListing = async (req, res) => {
     }
 
     // ✅ Add gallery photos if uploaded
-    const galleryPhotos =
-      req.files?.gallery_photos?.map((file) =>
-        file.path.replace(/\\/g, "/").replace("public/", "")
-      ) || [];
-
-    if (galleryPhotos.length > 0) {
-      updates.gallery_photos = galleryPhotos;
-    }
+    
 
     const [updatedRows] = await Listing.update(updates, {
       where: { id: listingId },
