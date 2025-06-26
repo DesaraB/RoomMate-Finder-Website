@@ -60,16 +60,15 @@ const Room = () => {
   if (!room) return <div className="room-not-found">Room not found.</div>;
 
   const amenityLabels = {
-  wifi: "WiFi",
-  parking: "Parking",
-  gym: "Gym",
-  pool: "Pool",
-  ac: "Air Conditioning",
-  laundry: "Laundry",
-  kitchen: "Kitchen",
-  "pet-friendly": "Pet Friendly",
-};
-
+    wifi: "WiFi",
+    parking: "Parking",
+    gym: "Gym",
+    pool: "Pool",
+    ac: "Air Conditioning",
+    laundry: "Laundry",
+    kitchen: "Kitchen",
+    "pet-friendly": "Pet Friendly",
+  };
 
   return (
     <div className="room-details-container">
@@ -121,21 +120,28 @@ const Room = () => {
           </p>
           <p>
             <strong>Amenities:</strong>{" "}
-            {Array.isArray(room.amenities)
-              ? room.amenities.map((a, i) => (
-                  <span key={i}>
-                    {amenityLabels[a.trim()] || a.trim()}
-                    {i < room.amenities.length - 1 && ", "}
-                  </span>
-                ))
-              : typeof room.amenities === "string"
-              ? room.amenities
-              : "None"}
+            {Array.from(
+              new Set(
+                (Array.isArray(room.amenities)
+                  ? room.amenities
+                  : typeof room.amenities === "string"
+                  ? room.amenities.split(",")
+                  : []
+                ).map((a) => a.trim())
+              )
+            ).map((a, i, arr) => (
+              <span key={i}>
+                {amenityLabels[a] || a}
+                {i < arr.length - 1 && ", "}
+              </span>
+            ))}
           </p>
 
           <p>
             <strong>Available From:</strong>{" "}
-            {new Date(room.available_from).toLocaleDateString()}
+            {room.available_from
+              ? new Date(room.available_from).toLocaleDateString()
+              : "Not specified"}
           </p>
         </div>
 
