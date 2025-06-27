@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./listings.css";
@@ -68,6 +67,11 @@ const Listings = () => {
                         ? `http://localhost:3001/${listing.photo_url}`
                         : "https://via.placeholder.com/600x400"
                     }
+                    style={{
+                      objectFit: listing.photo_url.includes("wide_banner")
+                        ? "contain"
+                        : "cover",
+                    }}
                     alt={listing.title}
                   />
                   <div className="price-tag">${listing.price}/mo</div>

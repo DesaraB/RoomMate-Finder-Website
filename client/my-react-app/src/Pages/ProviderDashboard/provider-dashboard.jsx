@@ -307,7 +307,6 @@ const ProviderDashboard = () => {
                         alt={listing.title}
                         className="listing-image"
                       />
-                      
 
                       <div className="listing-info">
                         <h4>{listing.title}</h4>
@@ -361,13 +360,25 @@ const ProviderDashboard = () => {
                     />
                     <div className="application-info">
                       <h4
-                        onClick={() => handleViewSeekerProfile(app.seeker?.id)}
+                        onClick={() => {
+                          if (app.seeker?.id) {
+                            navigate(`/seeker/${app.seeker.id}`);
+                          } else {
+                            console.warn(
+                              "Seeker ID missing in application:",
+                              app
+                            );
+                          }
+                        }}
                         style={{
                           cursor: "pointer",
+                          color: "#4361ee",
+                          textDecoration: "underline",
                         }}
                       >
-                        {app.seeker?.name}
+                        {app.seeker?.fullname || app.seeker?.name || "Seeker"}
                       </h4>
+
                       <p>{app.listing?.title}</p>
                       <small>
                         Applied on{" "}

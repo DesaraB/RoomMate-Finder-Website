@@ -10,9 +10,12 @@ const SeekerProfile = () => {
   useEffect(() => {
     const fetchSeeker = async () => {
       try {
-        const res = await axios.get(`http://localhost:3001/api/users/${seekerId}`, {
-          withCredentials: true,
-        });
+        const res = await axios.get(
+          `http://localhost:3001/api/users/${seekerId}`,
+          {
+            withCredentials: true,
+          }
+        );
         setSeeker(res.data);
       } catch (err) {
         console.error("Failed to fetch seeker profile", err);
@@ -28,19 +31,32 @@ const SeekerProfile = () => {
     <div className="seeker-profile">
       <div className="seeker-header">
         <img
-          src={seeker.profile_picture_url || "https://via.placeholder.com/150"}
-          alt={seeker.name}
+          src={
+            seeker.profile_picture_url
+              ? `http://localhost:3001/${seeker.profile_picture_url}`
+              : "https://via.placeholder.com/150"
+          }
+          alt={seeker.fullname || seeker.name}
           className="profile-image"
         />
+
         <div>
-          <h2>{seeker.name}</h2>
-          <p><span className="label">Gender:</span> {seeker.gender || "Not specified"}</p>
-          <p><span className="label">Age:</span> {seeker.age || "Unknown"}</p>
+          <h2>{seeker.fullname || seeker.name || "Unnamed Seeker"}</h2>
+          <p>
+            <span className="label">Gender:</span>{" "}
+            {seeker.gender || "Not specified"}
+          </p>
+          <p>
+            <span className="label">Age:</span> {seeker.age || "Unknown"}
+          </p>
         </div>
       </div>
 
       <div className="seeker-details">
-        <p><span className="label">Location:</span> {seeker.location || "Unknown"}</p>
+        <p>
+          <span className="label">Location:</span>{" "}
+          {seeker.location || "Unknown"}
+        </p>
         <p>
           <span className="label">Budget:</span>{" "}
           {seeker.budget_min && seeker.budget_max
@@ -58,7 +74,8 @@ const SeekerProfile = () => {
             : "Not specified"}
         </p>
         <p>
-          <span className="label">About:</span><br />
+          <span className="label">About:</span>
+          <br />
           {seeker.bio || seeker.description || "No description provided."}
         </p>
       </div>
