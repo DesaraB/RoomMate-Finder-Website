@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom"; // <-- added useNavigate
 import axios from "axios";
 import "./seeker-profile.css";
 
 const SeekerProfile = () => {
   const { seekerId } = useParams();
+  const navigate = useNavigate(); // <-- init navigate
   const [seeker, setSeeker] = useState(null);
 
   useEffect(() => {
@@ -33,7 +34,10 @@ const SeekerProfile = () => {
         <img
           src={
             seeker.profile_picture_url
-              ? `http://localhost:3001/${seeker.profile_picture_url}`
+              ? `http://localhost:3001/${seeker.profile_picture_url.replace(
+                  /^\/+/,
+                  ""
+                )}`
               : "https://via.placeholder.com/150"
           }
           alt={seeker.fullname || seeker.name}
@@ -79,6 +83,11 @@ const SeekerProfile = () => {
           {seeker.bio || seeker.description || "No description provided."}
         </p>
       </div>
+
+      {/* ✅ Go Back Button */}
+      <button className="back-button" onClick={() => navigate(-1)}>
+        ← Back
+      </button>
     </div>
   );
 };

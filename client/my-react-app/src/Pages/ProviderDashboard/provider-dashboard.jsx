@@ -370,11 +370,6 @@ const ProviderDashboard = () => {
                             );
                           }
                         }}
-                        style={{
-                          cursor: "pointer",
-                          color: "#4361ee",
-                          textDecoration: "underline",
-                        }}
                       >
                         {app.seeker?.fullname || app.seeker?.name || "Seeker"}
                       </h4>
