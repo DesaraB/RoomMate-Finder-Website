@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./listings.css";
@@ -15,12 +16,9 @@ const Listings = () => {
 
   const fetchListings = async () => {
     const res = await axios.get("http://localhost:3001/api/listings");
-
-    // Sort by createdAt (descending) so newest listings come first
     const sortedListings = res.data.sort(
       (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
     );
-
     setListings(sortedListings);
   };
 
@@ -31,15 +29,9 @@ const Listings = () => {
         { listingId },
         { withCredentials: true }
       );
-
-      if (res.status === 201) {
-        alert("Application submitted successfully!");
-      }
+      if (res.status === 201) alert("Application submitted successfully!");
     } catch (error) {
-      console.error("Error applying to listing:", error);
-      alert(
-        "You may have already applied, or you're not logged in as a seeker."
-      );
+      alert("You may have already applied or are not logged in as a seeker.");
     }
   };
 
@@ -50,15 +42,9 @@ const Listings = () => {
         { listingId },
         { withCredentials: true }
       );
-
-      if (res.status === 201) {
-        alert("Room saved successfully!");
-      }
+      if (res.status === 201) alert("Room saved successfully!");
     } catch (error) {
-      console.error("Error saving room:", error);
-      alert(
-        "This room may already be saved or you're not logged in as a seeker."
-      );
+      alert("Room may already be saved or you're not a seeker.");
     }
   };
 
@@ -69,7 +55,6 @@ const Listings = () => {
           <h1>Available Listings</h1>
           <p>Find your perfect roommate or housing situation</p>
         </div>
-
         <div className="listings-grid">
           {listings.length === 0 ? (
             <p>No listings found.</p>
@@ -77,29 +62,31 @@ const Listings = () => {
             listings.map((listing) => (
               <div key={listing.id} className="listing-card">
                 <div className="listing-image">
-                  <img src={listing.photo_url} alt={listing.title} />
+                  <img
+                    src={
+                      listing.photo_url
+                        ? `http://localhost:3001/${listing.photo_url}`
+                        : "https://via.placeholder.com/600x400"
+                    }
+                    alt={listing.title}
+                  />
                   <div className="price-tag">${listing.price}/mo</div>
                 </div>
-
                 <div className="listing-content">
                   <h3 className="listing-title">{listing.title}</h3>
                   <div className="listing-location">📍 {listing.location}</div>
-
                   <div className="listing-details">
                     <span>{listing.property_type}</span>
                     <span>{listing.bedrooms} Bedrooms</span>
                     <span>{listing.bathrooms} Bathrooms</span>
                   </div>
-
                   <div className="listing-description">
                     {listing.description}
                   </div>
-
                   <div className="provider-name">
                     <strong>Provider:</strong>{" "}
                     {listing.provider?.fullname || "Unknown"}
                   </div>
-
                   <div className="listing-actions">
                     <button
                       className="view-details-btn"
