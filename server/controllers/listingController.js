@@ -84,7 +84,9 @@ const createListing = async (req, res) => {
     } = req.body;
 
     const coverPhoto =
-      req.files?.cover_photo?.[0]?.path?.replace(/\\/g, "/").replace("public/", "") || null;
+      req.files?.cover_photo?.[0]?.path
+        ?.replace(/\\/g, "/")
+        .replace("public/", "") || null;
 
     const galleryPhotos =
       req.files?.gallery_photos?.map((file) =>
@@ -127,25 +129,31 @@ const updateListing = async (req, res) => {
 
     // ✅ Add cover photo if uploaded
     const coverPhoto =
-      req.files?.cover_photo?.[0]?.path?.replace(/\\/g, "/").replace("public/", "") || null;
+      req.files?.cover_photo?.[0]?.path
+        ?.replace(/\\/g, "/")
+        .replace("public/", "") || null;
     if (coverPhoto) {
       updates.photo_url = coverPhoto;
     }
 
-    // ✅ Add new gallery photos if uploaded
+    // ✅ Parse kept gallery photos from frontend (before upload)
+    const updatedGalleryFromFrontend = req.body.gallery_photos
+      ? JSON.parse(req.body.gallery_photos)
+      : [];
+
+    // ✅ Handle newly uploaded gallery photos
     const newGalleryPhotos =
       req.files?.gallery_photos?.map((file) =>
         file.path.replace(/\\/g, "/").replace("public/", "")
       ) || [];
 
-    // ✅ Fetch existing gallery photos to merge
-    const existingListing = await Listing.findByPk(listingId);
-    const existingGallery = existingListing.gallery_photos || [];
+    // ✅ Combine both to create final updated gallery list
+    updates.gallery_photos = [
+      ...updatedGalleryFromFrontend,
+      ...newGalleryPhotos,
+    ];
 
-    // ✅ Merge new and old photos
-    const mergedGallery = [...existingGallery, ...newGalleryPhotos];
-    updates.gallery_photos = mergedGallery;
-
+    // ✅ Update the listing in the DB
     const [updatedRows] = await Listing.update(updates, {
       where: { id: listingId },
     });
@@ -161,8 +169,6 @@ const updateListing = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
-
 
 // Delete listing
 const deleteListing = async (req, res) => {

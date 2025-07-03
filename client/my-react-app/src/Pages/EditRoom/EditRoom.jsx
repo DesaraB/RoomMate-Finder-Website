@@ -184,25 +184,33 @@ const EditRoom = () => {
     try {
       const formDataToSend = new FormData();
 
-      // Append text fields
+      // Append all text fields except gallery_photos (we'll handle that separately)
       Object.keys(formData).forEach((key) => {
         if (key !== "gallery_photos" && formData[key] !== "") {
           formDataToSend.append(key, formData[key]);
         }
       });
 
+      // ✅ Append selected amenities
       formDataToSend.append("amenities", selectedAmenities.join(","));
 
-      // Append cover photo if new one selected
-      if (coverFile) {
-        formDataToSend.append("cover_photo", coverFile);
-      }
+      // ✅ Append kept gallery photos (those that weren't removed)
+      formDataToSend.append(
+        "gallery_photos",
+        JSON.stringify(formData.gallery_photos)
+      );
 
-      // Append gallery photos if new ones selected
+      // ✅ Append new uploaded gallery photos
       galleryFiles.forEach((file) => {
         formDataToSend.append("gallery_photos", file);
       });
 
+      // ✅ Append new cover photo if selected
+      if (coverFile) {
+        formDataToSend.append("cover_photo", coverFile);
+      }
+
+      // 🔄 Send update request
       await axios.put(
         `http://localhost:3001/api/listings/${id}`,
         formDataToSend,
