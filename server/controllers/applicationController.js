@@ -13,7 +13,7 @@ exports.getApplicationsForSeeker = async (req, res) => {
           as: "listing",
           include: {
             model: User,
-            as: "seeker",
+            as: "provider",
             attributes: ["id", "fullname", "email", "phone_number"],
           },
         },

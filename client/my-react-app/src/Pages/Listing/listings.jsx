@@ -68,12 +68,13 @@ const Listings = () => {
                         : "https://via.placeholder.com/600x400"
                     }
                     style={{
-                      objectFit: listing.photo_url.includes("wide_banner")
+                      objectFit: listing.photo_url?.includes("wide_banner")
                         ? "contain"
                         : "cover",
                     }}
                     alt={listing.title}
                   />
+
                   <div className="price-tag">${listing.price}/mo</div>
                 </div>
                 <div className="listing-content">

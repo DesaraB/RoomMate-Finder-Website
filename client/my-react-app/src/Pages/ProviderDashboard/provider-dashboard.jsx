@@ -117,10 +117,6 @@ const ProviderDashboard = () => {
     navigate(`/edit-room/${listing.id}`);
   };
 
-  const handleViewSeekerProfile = (seekerId) => {
-    navigate(`/seeker/${seekerId}`);
-  };
-
   return (
     <div className="provider-dashboard">
       <div className="dashboard-container">
@@ -352,8 +348,9 @@ const ProviderDashboard = () => {
                   <div key={app.id} className="application-item">
                     <img
                       src={
-                        app.seeker?.profile_picture_url ||
-                        "https://images.unsplash.com/photo-1494790108755-2616b612d1cf?w=60"
+                        app.seeker?.profile_picture_url
+                          ? `http://localhost:3001/${app.seeker.profile_picture_url}`
+                          : "/default-avatar.png"
                       }
                       alt={app.seeker?.name || "Seeker"}
                       className="seeker-image"
