@@ -74,8 +74,8 @@ const Room = () => {
   };
 
   return (
-    <div className="room-details-container">
-      <div className="room-image-wrapper">
+    <div className="room-details-page">
+      <div className="room-image-section">
         <img
           src={
             room.photo_url
@@ -83,10 +83,9 @@ const Room = () => {
               : "https://via.placeholder.com/600x400"
           }
           alt={room.title}
-          className="room-image"
+          className="room-main-image"
         />
 
-        {/* ✅ Gallery images preview */}
         {room.gallery_photos?.length > 0 && (
           <div className="room-gallery">
             {room.gallery_photos.map((img, i) => (
@@ -101,14 +100,10 @@ const Room = () => {
         )}
       </div>
 
-      <div className="room-content">
-        <h1 className="room-title">{room.title}</h1>
-        <p className="room-description">{room.description}</p>
-
-        <div className="room-info">
-          <p>
-            <strong>Location:</strong> {room.location}
-          </p>
+      <div className="room-info-section">
+        <h2>{room.title}</h2>
+        <p className="room-location">📍 {room.location}</p>
+        <div className="room-meta">
           <p>
             <strong>Price:</strong> ${room.price}/month
           </p>
@@ -122,30 +117,38 @@ const Room = () => {
             <strong>Lease Term:</strong> {room.lease_term}
           </p>
           <p>
-            <strong>Amenities:</strong>{" "}
-            {Array.from(
-              new Set(
-                (Array.isArray(room.amenities)
-                  ? room.amenities
-                  : typeof room.amenities === "string"
-                  ? room.amenities.split(",")
-                  : []
-                ).map((a) => a.trim())
-              )
-            ).map((a, i, arr) => (
-              <span key={i}>
-                {amenityLabels[a] || a}
-                {i < arr.length - 1 && ", "}
-              </span>
-            ))}
-          </p>
-
-          <p>
             <strong>Available From:</strong>{" "}
             {room.available_from
               ? new Date(room.available_from).toLocaleDateString()
               : "Not specified"}
           </p>
+        </div>
+
+        {room.amenities && (
+          <div className="room-amenities">
+            <h4>Amenities</h4>
+            <div className="amenities-badge-list">
+              {Array.from(
+                new Set(
+                  (Array.isArray(room.amenities)
+                    ? room.amenities
+                    : typeof room.amenities === "string"
+                    ? room.amenities.split(",")
+                    : []
+                  ).map((a) => a.trim())
+                )
+              ).map((a, i) => (
+                <span key={i} className="amenity-badge">
+                  {amenityLabels[a] || a}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="room-description">
+          <h4>Description</h4>
+          <p>{room.description}</p>
         </div>
 
         <div className="room-provider">
@@ -155,17 +158,15 @@ const Room = () => {
           </p>
         </div>
 
-        <div className="room-actions">
-          {authUser?.role === "seeker" && (
-            <button
-              className="apply-now-btn"
-              onClick={handleApply}
-              disabled={applied}
-            >
-              {applied ? "Application Sent" : "Apply Now"}
-            </button>
-          )}
-        </div>
+        {authUser?.role === "seeker" && (
+          <button
+            className="apply-now-btn"
+            onClick={handleApply}
+            disabled={applied}
+          >
+            {applied ? "Application Sent" : "Apply Now"}
+          </button>
+        )}
       </div>
     </div>
   );
