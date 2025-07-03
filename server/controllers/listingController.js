@@ -1,4 +1,6 @@
 const { Listing, User } = require("../models");
+const fs = require("fs");
+const path = require("path");
 
 // Get all listings
 const getAllListings = async (req, res) => {
@@ -117,6 +119,7 @@ const createListing = async (req, res) => {
 };
 
 // Update listing
+
 const updateListing = async (req, res) => {
   try {
     const listingId = parseInt(req.params.id);
@@ -147,20 +150,41 @@ const updateListing = async (req, res) => {
         file.path.replace(/\\/g, "/").replace("public/", "")
       ) || [];
 
-    // ✅ Combine both to create final updated gallery list
+    // ✅ Get existing listing from DB
+    const existingListing = await Listing.findByPk(listingId);
+    if (!existingListing) {
+      return res.status(404).json({ message: "Listing not found" });
+    }
+
+    const existingGallery = existingListing.gallery_photos || [];
+
+    // ✅ Identify removed files
+    const removedPhotos = existingGallery.filter(
+      (photo) => !updatedGalleryFromFrontend.includes(photo)
+    );
+
+    // ✅ Delete removed files from disk
+    removedPhotos.forEach((photoPath) => {
+      const absolutePath = path.join(__dirname, "..", "public", photoPath);
+      fs.unlink(absolutePath, (err) => {
+        if (err) {
+          console.error(`Failed to delete ${photoPath}:`, err.message);
+        } else {
+          console.log(`Deleted: ${photoPath}`);
+        }
+      });
+    });
+
+    // ✅ Save updated gallery
     updates.gallery_photos = [
       ...updatedGalleryFromFrontend,
       ...newGalleryPhotos,
     ];
 
-    // ✅ Update the listing in the DB
+    // ✅ Update listing
     const [updatedRows] = await Listing.update(updates, {
       where: { id: listingId },
     });
-
-    if (updatedRows === 0) {
-      return res.status(404).json({ message: "Listing not found" });
-    }
 
     const updatedListing = await Listing.findByPk(listingId);
     res.status(200).json(updatedListing);

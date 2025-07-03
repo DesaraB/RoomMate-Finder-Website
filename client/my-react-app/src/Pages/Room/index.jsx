@@ -172,7 +172,7 @@ const Room = () => {
                 }
               >
                 ›
-              </button>
+              </button> 
             </div>
           </div>
         )}
