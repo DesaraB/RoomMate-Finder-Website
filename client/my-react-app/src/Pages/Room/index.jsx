@@ -12,6 +12,8 @@ const Room = () => {
   const [loading, setLoading] = useState(true);
   const [applied, setApplied] = useState(false);
   const { authUser } = useAuthContext();
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   useEffect(() => {
     const loadRoomById = async () => {
@@ -88,12 +90,16 @@ const Room = () => {
 
         {room.gallery_photos?.length > 0 && (
           <div className="room-gallery">
-            {room.gallery_photos.map((img, i) => (
+            {room.gallery_photos?.map((img, i) => (
               <img
                 key={i}
                 src={`http://localhost:3001/${img}`}
                 alt={`Gallery ${i}`}
                 className="room-gallery-thumb"
+                onClick={() => {
+                  setLightboxIndex(i);
+                  setIsLightboxOpen(true);
+                }}
               />
             ))}
           </div>
@@ -123,6 +129,53 @@ const Room = () => {
               : "Not specified"}
           </p>
         </div>
+
+        {isLightboxOpen && (
+          <div
+            className="lightbox-overlay"
+            onClick={() => setIsLightboxOpen(false)}
+          >
+            <div
+              className="lightbox-content"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                className="lightbox-close"
+                onClick={() => setIsLightboxOpen(false)}
+              >
+                ✕
+              </button>
+
+              <button
+                className="lightbox-nav left"
+                onClick={() =>
+                  setLightboxIndex((prev) =>
+                    prev === 0 ? room.gallery_photos.length - 1 : prev - 1
+                  )
+                }
+              >
+                ‹
+              </button>
+
+              <img
+                src={`http://localhost:3001/${room.gallery_photos[lightboxIndex]}`}
+                alt={`Full view ${lightboxIndex}`}
+                className="lightbox-image"
+              />
+
+              <button
+                className="lightbox-nav right"
+                onClick={() =>
+                  setLightboxIndex((prev) =>
+                    prev === room.gallery_photos.length - 1 ? 0 : prev + 1
+                  )
+                }
+              >
+                ›
+              </button>
+            </div>
+          </div>
+        )}
 
         {room.amenities && (
           <div className="room-amenities">
