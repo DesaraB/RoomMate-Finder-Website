@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAuthContext } from "../../Context/AuthContext";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./updateprofile.css";
 
@@ -10,6 +11,16 @@ const UpdateProfile = () => {
   const [profilePictureFile, setProfilePictureFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showModal, setShowModal] = useState(false);
+
+  const navigate = useNavigate();
+
+  const handleGoBack = () => {
+    if (authUser.role === "provider") {
+      navigate("/provider-dashboard");
+    } else {
+      navigate("/seeker-dashboard");
+    }
+  };
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -55,7 +66,6 @@ const UpdateProfile = () => {
     try {
       const formDataPayload = new FormData();
 
-      // Add your original payload fields
       const payload = {
         ...formData,
         budgetMin:
@@ -68,14 +78,12 @@ const UpdateProfile = () => {
             : undefined,
       };
 
-      // Append fields to FormData
       for (const key in payload) {
         if (payload[key] !== undefined && payload[key] !== null) {
           formDataPayload.append(key, payload[key]);
         }
       }
 
-      // ✅ Append image file if selected
       if (profilePictureFile) {
         formDataPayload.append("profile_picture", profilePictureFile);
       }
@@ -126,6 +134,10 @@ const UpdateProfile = () => {
 
   return (
     <div className="update-profile">
+      <button className="go-back-btn" onClick={handleGoBack}>
+	  ← Back
+      </button>
+
       <div className="profile-header">
         <h2>Update Your Profile</h2>
         <div className="animated-border"></div>

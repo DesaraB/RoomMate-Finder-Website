@@ -6,7 +6,9 @@ import {
   logout_user_service,
   sara_services,
 } from "../Services/auth";
+
 const AuthContext = createContext({});
+
 const AuthProvider = (props) => {
   const [authUser, setAuthUser] = useState({});
   const [trigger, setTrigger] = useState(false);
@@ -18,9 +20,9 @@ const AuthProvider = (props) => {
   const loginUser = async (data) => {
     try {
       const result = await login_user_service(data);
-      if (result.data.status === 200) {
-        setAuthUser(result.data.user);
-        return result.data.user;
+      if (result.status === 200) {
+        setAuthUser(result.user);
+        return result.user;
       }
     } catch (error) {
       console.log("error--in AuthProvider--", error);
@@ -31,9 +33,9 @@ const AuthProvider = (props) => {
   const registerUser = async (data) => {
     try {
       const result = await register_user_service(data);
-      if (result.data.status === 200) {
-        setAuthUser(result.data.user);
-        return result.data.user;
+      if (result.status === 200) {
+        setAuthUser(result.user);
+        return result.user;
       }
     } catch (error) {
       console.log("error--in AuthProvider--", error);
@@ -44,9 +46,9 @@ const AuthProvider = (props) => {
   const checkAuthUser = async () => {
     try {
       const result = await checkAuth_user_service();
-      if (result.data.status === 200) {
-        setAuthUser(result.data.user);
-        return result.data.user;
+      if (result.status === 200) {
+        setAuthUser(result.user);
+        return result.user;
       } else {
         setAuthUser({});
       }
@@ -57,11 +59,12 @@ const AuthProvider = (props) => {
       return error;
     }
   };
+
   const refreshAuthUser = async () => {
     try {
       const result = await checkAuth_user_service();
-      if (result.data.status === 200) {
-        setAuthUser(result.data.user);
+      if (result.status === 200) {
+        setAuthUser(result.user);
       }
     } catch (error) {
       console.log("Failed to refresh user", error);
@@ -71,10 +74,10 @@ const AuthProvider = (props) => {
   const logoutUser = async () => {
     try {
       const result = await logout_user_service();
-      if (result.data.status === 200) {
+      if (result.status === 200) {
         setAuthUser({});
         setTrigger(!trigger);
-        return result.data;
+        return result;
       }
     } catch (error) {
       throw error;
@@ -102,18 +105,16 @@ const AuthProvider = (props) => {
     trigger,
     refreshAuthUser,
   };
+
   return (
-    <AuthContext.Provider value={values}>{props.children}</AuthContext.Provider>
+    <AuthContext.Provider value={values}>
+      {props.children}
+    </AuthContext.Provider>
   );
 };
+
 const useAuthContext = () => {
   return useContext(AuthContext);
 };
 
 export { AuthProvider, useAuthContext };
-
-// 1) duhet te kemi nje objekt global i cili do te mbaje brenda vetes funksione dhe variable,te cilat do te shperndahen tek te gjithe komponentet
-// 2) si fillim krijojme objektin global me: createContext({}); dhe shohim qe kemi kaluar nje parameter si objekt {}
-// 3) AuthContext.Provider eshte momenti ku ne jemi duke permbledhur te gjitha variablat,state,function dhe i shperndan tek komponentet
-// 4) {props.children} jane te gjithe komponentet qe do permbaje AuthProvider ne momentin qe do mbeshtjelle rutet
-// 5) qe te perdorim Contekstin e krijuar duhet qe tja japim si parameter useContext dhe ne kete moment ai eshte i disponueshme te importohet brenda

@@ -28,14 +28,7 @@ exports.register = async (req, res) => {
     } = req.body;
 
     // Validate required user fields
-    if (
-      !username ||
-      !email ||
-      !password ||
-      !gender ||
-      !role ||
-      !age
-    ) {
+    if (!username || !email || !password || !gender || !role || !age) {
       return res.status(400).json({ error: "Missing required user fields" });
     }
 
@@ -130,29 +123,43 @@ exports.register = async (req, res) => {
 };
 
 // ✅ LOGIN
+// ✅ LOGIN WITH DEBUG LOGGING
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    console.log("📥 Login attempt:");
+    console.log("Email:", email);
+    console.log("Password (plain):", password); // ⚠️ Only during debugging
+
     if (!email || !password) {
+      console.log("❌ Missing credentials");
       return res
         .status(400)
         .json({ error: "Email and password are required." });
     }
 
     const user = await User.findOne({ where: { email } });
+
     if (!user) {
+      console.log("❌ No user found for email:", email);
       return res.status(401).json({ error: "Invalid credentials." });
     }
 
+    console.log("🔎 Found user:", user.email);
+
     const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    console.log("🔐 Password match:", isPasswordValid);
+
     if (!isPasswordValid) {
+      console.log("❌ Incorrect password");
       return res.status(401).json({ error: "Invalid credentials." });
     }
 
     const token = jwt.sign(
       { id: user.id, role: user.role },
-      process.env.JWT_SECRET, // ✅ Use env variable
+      process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
 
@@ -164,12 +171,14 @@ exports.login = async (req, res) => {
 
     const { password: _, ...safeUser } = user.get({ plain: true });
 
+    console.log("✅ Login successful:", safeUser.email);
+
     return res.status(200).json({ status: 200, user: safeUser });
   } catch (error) {
-    console.error("Login error:", error);
+    console.error("💥 Login error:", error);
     return res.status(500).json({ error: "Server error." });
   }
-}; // ✅ CLOSES login function only
+};
 
 // ✅ GET ALL LISTINGS
 exports.listings = async (req, res) => {
