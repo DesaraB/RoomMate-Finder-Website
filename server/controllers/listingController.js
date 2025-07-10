@@ -125,18 +125,15 @@ const createListing = async (req, res) => {
 };
 
 // Update listing
-
 const updateListing = async (req, res) => {
   try {
     const listingId = parseInt(req.params.id);
     const updates = req.body;
 
-    // Parse amenities
     if (updates.amenities && Array.isArray(updates.amenities)) {
       updates.amenities = updates.amenities.join(",");
     }
 
-    // ✅ Add cover photo if uploaded
     const coverPhoto =
       req.files?.cover_photo?.[0]?.path
         ?.replace(/\\/g, "/")
@@ -145,18 +142,15 @@ const updateListing = async (req, res) => {
       updates.photo_url = coverPhoto;
     }
 
-    // ✅ Parse kept gallery photos from frontend (before upload)
     const updatedGalleryFromFrontend = req.body.gallery_photos
       ? JSON.parse(req.body.gallery_photos)
       : [];
 
-    // ✅ Handle newly uploaded gallery photos
     const newGalleryPhotos =
       req.files?.gallery_photos?.map((file) =>
         file.path.replace(/\\/g, "/").replace("public/", "")
       ) || [];
 
-    // ✅ Get existing listing from DB
     const existingListing = await Listing.findByPk(listingId);
     if (!existingListing) {
       return res.status(404).json({ message: "Listing not found" });
@@ -164,12 +158,10 @@ const updateListing = async (req, res) => {
 
     const existingGallery = existingListing.gallery_photos || [];
 
-    // ✅ Identify removed files
     const removedPhotos = existingGallery.filter(
       (photo) => !updatedGalleryFromFrontend.includes(photo)
     );
 
-    // ✅ Delete removed files from disk
     removedPhotos.forEach((photoPath) => {
       const absolutePath = path.join(__dirname, "..", "public", photoPath);
       fs.unlink(absolutePath, (err) => {
@@ -181,14 +173,12 @@ const updateListing = async (req, res) => {
       });
     });
 
-    // ✅ Save updated gallery
     updates.gallery_photos = [
       ...updatedGalleryFromFrontend,
       ...newGalleryPhotos,
     ];
 
-    // ✅ Update listing
-    const [updatedRows] = await Listing.update(updates, {
+    await Listing.update(updates, {
       where: { id: listingId },
     });
 
@@ -199,19 +189,37 @@ const updateListing = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-// 🔍 Search listings by location or description
+
+// 🔍 Search listings with filters
 const searchListings = async (req, res) => {
-  const { query } = req.query;
+  const { query, minPrice, maxPrice, bedrooms } = req.query;
+  const conditions = [];
+
+  if (query) {
+    conditions.push({
+      [Op.or]: [
+        { location: { [Op.like]: `%${query}%` } },
+        { description: { [Op.like]: `%${query}%` } },
+        { title: { [Op.like]: `%${query}%` } },
+      ],
+    });
+  }
+
+  if (minPrice) {
+    conditions.push({ price: { [Op.gte]: parseFloat(minPrice) } });
+  }
+
+  if (maxPrice) {
+    conditions.push({ price: { [Op.lte]: parseFloat(maxPrice) } });
+  }
+
+  if (bedrooms) {
+    conditions.push({ bedrooms: parseInt(bedrooms) });
+  }
 
   try {
     const listings = await Listing.findAll({
-      where: {
-        [Op.or]: [
-          { location: { [Op.like]: `%${query}%` } },
-          { description: { [Op.like]: `%${query}%` } },
-          { title: { [Op.like]: `%${query}%` } },
-        ],
-      },
+      where: conditions.length ? { [Op.and]: conditions } : undefined,
       include: [
         {
           model: User,
