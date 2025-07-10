@@ -3,6 +3,7 @@ const router = express.Router();
 const multer = require("multer");
 const listingController = require("../controllers/listingController");
 
+// Multer storage config
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "public/uploads/");
@@ -12,19 +13,22 @@ const storage = multer.diskStorage({
     cb(null, uniqueSuffix + "-" + file.originalname);
   },
 });
-
 const upload = multer({ storage });
 
-// Get all listings
-router.get("/", listingController.getAllListings);
 
-// Get listing by ID
-router.get("/:id", listingController.getListingById);
+// ✅ FIRST: Search route (must come before "/:id")
+router.get("/search", listingController.searchListings);
 
-// Get listings by provider ID
+// ✅ THEN: Get listings by provider ID
 router.get("/provider/:providerId", listingController.getListingsByUser);
 
-// Create a new listing
+// ✅ Then: Get listing by ID
+router.get("/:id", listingController.getListingById);
+
+// ✅ Get all listings (base path)
+router.get("/", listingController.getAllListings);
+
+// ✅ Create a new listing
 router.post(
   "/",
   upload.fields([
@@ -34,7 +38,7 @@ router.post(
   listingController.createListing
 );
 
-// ✅ FIXED: Update a listing (now accepts multipart/form-data)
+// ✅ Update a listing
 router.put(
   "/:id",
   upload.fields([
@@ -44,7 +48,7 @@ router.put(
   listingController.updateListing
 );
 
-// Delete a listing
+// ✅ Delete a listing
 router.delete("/:id", listingController.deleteListing);
 
 module.exports = router;

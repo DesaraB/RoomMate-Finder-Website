@@ -1,6 +1,7 @@
 const { Listing, User } = require("../models");
 const fs = require("fs");
 const path = require("path");
+const { Op } = require("sequelize");
 
 // Get all listings
 const getAllListings = async (req, res) => {
@@ -23,8 +24,13 @@ const getAllListings = async (req, res) => {
 
 // Get listing by ID
 const getListingById = async (req, res) => {
+  const listingId = parseInt(req.params.id);
+
+  if (isNaN(listingId)) {
+    return res.status(400).json({ message: "Invalid listing ID" });
+  }
+
   try {
-    const listingId = parseInt(req.params.id);
     const listing = await Listing.findOne({
       where: { id: listingId },
       include: [
@@ -193,6 +199,34 @@ const updateListing = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+// 🔍 Search listings by location or description
+const searchListings = async (req, res) => {
+  const { query } = req.query;
+
+  try {
+    const listings = await Listing.findAll({
+      where: {
+        [Op.or]: [
+          { location: { [Op.like]: `%${query}%` } },
+          { description: { [Op.like]: `%${query}%` } },
+          { title: { [Op.like]: `%${query}%` } },
+        ],
+      },
+      include: [
+        {
+          model: User,
+          as: "provider",
+          attributes: ["id", "fullname", "profile_picture_url"],
+        },
+      ],
+    });
+
+    res.status(200).json(listings);
+  } catch (error) {
+    console.error("Error searching listings:", error);
+    res.status(500).json({ message: "Search failed" });
+  }
+};
 
 // Delete listing
 const deleteListing = async (req, res) => {
@@ -218,4 +252,5 @@ module.exports = {
   createListing,
   updateListing,
   deleteListing,
+  searchListings,
 };

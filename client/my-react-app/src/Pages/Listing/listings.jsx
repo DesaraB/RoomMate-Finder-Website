@@ -6,21 +6,52 @@ import { useAuthContext } from "../../Context/AuthContext";
 
 const Listings = () => {
   const [listings, setListings] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
   const { authUser } = useAuthContext();
 
+  // Fetch listings on search input change
   useEffect(() => {
-    fetchListings();
-  }, []);
+    const delayDebounce = setTimeout(() => {
+      if (searchQuery.trim()) {
+        fetchSearchListings(searchQuery);
+      } else {
+        fetchListings();
+      }
+    }, 300);
 
+    return () => clearTimeout(delayDebounce);
+  }, [searchQuery]);
+
+  // Fetch all listings
   const fetchListings = async () => {
-    const res = await axios.get("http://localhost:3001/api/listings");
-    const sortedListings = res.data.sort(
-      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-    );
-    setListings(sortedListings);
+    try {
+      const res = await axios.get("http://localhost:3001/api/listings");
+      const sortedListings = res.data.sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      );
+      setListings(sortedListings);
+    } catch (err) {
+      console.error("Failed to fetch listings", err);
+    }
   };
 
+  // Fetch filtered listings by search query
+  const fetchSearchListings = async (query) => {
+    try {
+      const res = await axios.get(
+        `http://localhost:3001/api/listings/search?query=${encodeURIComponent(query)}`
+      );
+      const sortedListings = res.data.sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      );
+      setListings(sortedListings);
+    } catch (error) {
+      console.error("Search failed:", error);
+    }
+  };
+
+  // Apply for a room
   const handleApply = async (listingId) => {
     try {
       const res = await axios.post(
@@ -34,6 +65,7 @@ const Listings = () => {
     }
   };
 
+  // Save room to favorites
   const handleSave = async (listingId) => {
     try {
       const res = await axios.post(
@@ -54,6 +86,19 @@ const Listings = () => {
           <h1>Available Listings</h1>
           <p>Find your perfect roommate or housing situation</p>
         </div>
+
+        {/* 🔍 Search Bar */}
+        <div className="search-bar">
+          <input
+            type="text"
+            placeholder="Search by location or description..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="search-input"
+          />
+        </div>
+
+        {/* 🏠 Listings Grid */}
         <div className="listings-grid">
           {listings.length === 0 ? (
             <p>No listings found.</p>
@@ -74,9 +119,9 @@ const Listings = () => {
                     }}
                     alt={listing.title}
                   />
-
                   <div className="price-tag">${listing.price}/mo</div>
                 </div>
+
                 <div className="listing-content">
                   <h3 className="listing-title">{listing.title}</h3>
                   <div className="listing-location">📍 {listing.location}</div>
@@ -95,11 +140,13 @@ const Listings = () => {
                   <div className="listing-actions">
                     <button
                       className="view-details-btn"
-                      onClick={() => navigate(`/view-room/${listing.id}`)}
+                      onClick={() =>
+                        listing.id && navigate(`/view-room/${listing.id}`)
+                      }
                     >
                       View Details →
                     </button>
-                    {authUser.role === "seeker" && (
+                    {authUser?.role === "seeker" && (
                       <>
                         <button
                           className="apply-btn"
