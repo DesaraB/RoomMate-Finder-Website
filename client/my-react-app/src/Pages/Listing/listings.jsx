@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import "./listings.css";
 import { useNavigate } from "react-router-dom";
@@ -7,51 +7,40 @@ import { useAuthContext } from "../../Context/AuthContext";
 const Listings = () => {
   const [listings, setListings] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+  const [bedrooms, setBedrooms] = useState("");
+
   const navigate = useNavigate();
   const { authUser } = useAuthContext();
 
-  // Fetch listings on search input change
-  useEffect(() => {
-    const delayDebounce = setTimeout(() => {
-      if (searchQuery.trim()) {
-        fetchSearchListings(searchQuery);
-      } else {
-        fetchListings();
-      }
-    }, 300);
-
-    return () => clearTimeout(delayDebounce);
-  }, [searchQuery]);
-
-  // Fetch all listings
-  const fetchListings = async () => {
+  const fetchFilteredListings = useCallback(async () => {
     try {
-      const res = await axios.get("http://localhost:3001/api/listings");
-      const sortedListings = res.data.sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-      );
-      setListings(sortedListings);
-    } catch (err) {
-      console.error("Failed to fetch listings", err);
-    }
-  };
-
-  // Fetch filtered listings by search query
-  const fetchSearchListings = async (query) => {
-    try {
-      const res = await axios.get(
-        `http://localhost:3001/api/listings/search?query=${encodeURIComponent(query)}`
-      );
+      const res = await axios.get("http://localhost:3001/api/listings/search", {
+        params: {
+          query: searchQuery,
+          minPrice,
+          maxPrice,
+          bedrooms,
+        },
+      });
       const sortedListings = res.data.sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       );
       setListings(sortedListings);
     } catch (error) {
-      console.error("Search failed:", error);
+      console.error("Search/filter failed:", error);
     }
-  };
+  }, [searchQuery, minPrice, maxPrice, bedrooms]);
 
-  // Apply for a room
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      fetchFilteredListings();
+    }, 300);
+
+    return () => clearTimeout(delayDebounce);
+  }, [fetchFilteredListings]);
+
   const handleApply = async (listingId) => {
     try {
       const res = await axios.post(
@@ -65,7 +54,6 @@ const Listings = () => {
     }
   };
 
-  // Save room to favorites
   const handleSave = async (listingId) => {
     try {
       const res = await axios.post(
@@ -87,8 +75,8 @@ const Listings = () => {
           <p>Find your perfect roommate or housing situation</p>
         </div>
 
-        {/* 🔍 Search Bar */}
-        <div className="search-bar">
+        {/* 🔍 Filters Bar */}
+        <div className="filters-bar">
           <input
             type="text"
             placeholder="Search by location or description..."
@@ -96,6 +84,24 @@ const Listings = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
             className="search-input"
           />
+          <input
+            type="number"
+            placeholder="Min Price"
+            value={minPrice}
+            onChange={(e) => setMinPrice(e.target.value)}
+          />
+          <input
+            type="number"
+            placeholder="Max Price"
+            value={maxPrice}
+            onChange={(e) => setMaxPrice(e.target.value)}
+          />
+          <select value={bedrooms} onChange={(e) => setBedrooms(e.target.value)}>
+            <option value="">All Bedrooms</option>
+            <option value="1">1 Bedroom</option>
+            <option value="2">2 Bedrooms</option>
+            <option value="3">3 Bedrooms</option>
+          </select>
         </div>
 
         {/* 🏠 Listings Grid */}

@@ -89,6 +89,8 @@ const createListing = async (req, res) => {
       amenities,
       available_from,
       lease_term,
+      latitude,
+      longitude,
     } = req.body;
 
     const coverPhoto =
@@ -113,6 +115,8 @@ const createListing = async (req, res) => {
       amenities: Array.isArray(amenities) ? amenities.join(",") : amenities,
       available_from,
       lease_term,
+      latitude: latitude ? parseFloat(latitude) : null,
+      longitude: longitude ? parseFloat(longitude) : null,
       photo_url: coverPhoto,
       gallery_photos: galleryPhotos,
     });

@@ -214,16 +214,28 @@
   }
 }
 .search-bar {
-	text-align: center;
-	margin-bottom: 20px;
-  }
-  
-  .search-input {
-	padding: 10px;
-	width: 60%;
-	max-width: 400px;
-	border: 1px solid #ccc;
-	border-radius: 8px;
-	font-size: 16px;
-  }
-  
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  padding: 10px;
+  width: 60%;
+  max-width: 400px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+}
+.filters-bar {
+  display: flex;
+  gap: 10px;
+  margin: 15px 0;
+  flex-wrap: wrap;
+}
+
+.filters-bar input,
+.filters-bar select {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}

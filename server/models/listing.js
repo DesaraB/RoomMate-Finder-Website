@@ -60,6 +60,14 @@ const Listing = sequelize.define(
         this.setDataValue("gallery_photos", JSON.stringify(value));
       },
     },
+	latitude: {
+		type: DataTypes.FLOAT,
+		allowNull: true,
+	  },
+	  longitude: {
+		type: DataTypes.FLOAT,
+		allowNull: true,
+	  }	  
   },
   {
     tableName: "listings",
