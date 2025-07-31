@@ -3,6 +3,7 @@ import axios from "axios";
 import "./provider-dashboard.css";
 import { useAuthContext } from "../../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import ChatBox from "../../Components/Chatbox/ChatBox"; // 💬 Import ChatBox
 
 const ProviderDashboard = () => {
   const { authUser } = useAuthContext();
@@ -152,10 +153,7 @@ const ProviderDashboard = () => {
                 className="add-room-form"
                 onSubmit={async (e) => {
                   e.preventDefault();
-
                   const formData = new FormData();
-
-                  // Append text fields
                   formData.append("title", e.target.title.value);
                   formData.append("description", e.target.description.value);
                   formData.append("location", e.target.location.value);
@@ -174,13 +172,11 @@ const ProviderDashboard = () => {
                   formData.append("lease_term", e.target.lease_term.value);
                   formData.append("provider_id", authUser.id);
 
-                  // ✅ Append cover photo
                   const coverPhoto = e.target.cover_photo.files[0];
                   if (coverPhoto) {
                     formData.append("cover_photo", coverPhoto);
                   }
 
-                  // ✅ Append gallery photos
                   const galleryFiles = e.target.gallery_photos.files;
                   for (let i = 0; i < galleryFiles.length; i++) {
                     formData.append("gallery_photos", galleryFiles[i]);
@@ -191,9 +187,7 @@ const ProviderDashboard = () => {
                       "http://localhost:3001/api/listings",
                       formData,
                       {
-                        headers: {
-                          "Content-Type": "multipart/form-data",
-                        },
+                        headers: { "Content-Type": "multipart/form-data" },
                         withCredentials: true,
                       }
                     );
@@ -248,6 +242,7 @@ const ProviderDashboard = () => {
                   <option value="condo">Condo</option>
                   <option value="studio">Studio</option>
                 </select>
+
                 <div className="amenities-compact">
                   {amenityOptions.map((amenity) => (
                     <label
@@ -272,7 +267,6 @@ const ProviderDashboard = () => {
                 <input name="lease_term" placeholder="Lease Term" />
                 <label>Cover Photo:</label>
                 <input name="cover_photo" type="file" accept="image/*" />
-
                 <label>Gallery Photos:</label>
                 <input
                   name="gallery_photos"
@@ -303,7 +297,6 @@ const ProviderDashboard = () => {
                         alt={listing.title}
                         className="listing-image"
                       />
-
                       <div className="listing-info">
                         <h4>{listing.title}</h4>
                         <p>${listing.price}/month</p>
@@ -340,6 +333,7 @@ const ProviderDashboard = () => {
               <h3>Recent Applications</h3>
               <span className="badge">{providerData.newApplications} new</span>
             </div>
+
             <div className="applications-list">
               {applications.length === 0 ? (
                 <p>No recent applications.</p>
@@ -357,20 +351,12 @@ const ProviderDashboard = () => {
                     />
                     <div className="application-info">
                       <h4
-                        onClick={() => {
-                          if (app.seeker?.id) {
-                            navigate(`/seeker/${app.seeker.id}`);
-                          } else {
-                            console.warn(
-                              "Seeker ID missing in application:",
-                              app
-                            );
-                          }
-                        }}
+                        onClick={() =>
+                          app.seeker?.id && navigate(`/seeker/${app.seeker.id}`)
+                        }
                       >
                         {app.seeker?.fullname || app.seeker?.name || "Seeker"}
                       </h4>
-
                       <p>{app.listing?.title}</p>
                       <small>
                         Applied on{" "}
@@ -406,6 +392,23 @@ const ProviderDashboard = () => {
                         </div>
                       )}
                     </div>
+
+                    {/* 💬 ChatBox: vetëm nëse aplikimi është accepted */}
+                    {app.status === "accepted" &&
+                      app.seeker?.id &&
+                      app.listing?.id && (
+                        <div
+                          className="chatbox-wrapper"
+                          style={{ marginTop: "10px" }}
+                        >
+                          <ChatBox
+                            seekerId={app.seeker.id}
+                            providerId={authUser.id}
+                            listingId={app.listing.id}
+                            currentUserId={authUser.id}
+                          />
+                        </div>
+                      )}
                   </div>
                 ))
               )}

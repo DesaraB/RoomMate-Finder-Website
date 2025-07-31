@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../../Context/AuthContext";
+import ChatBox from "../../Components/Chatbox/ChatBox";
 import "./seeker-dashboard.css";
 
 const SeekerDashboard = () => {
@@ -139,20 +140,37 @@ const SeekerDashboard = () => {
                         {new Date(application.createdAt).toLocaleDateString()} •
                         Provider: {application.listing?.provider?.fullname}
                       </small>
+
                       {application.status === "accepted" && (
-                        <div className="accepted-contact">
-                          <p>✅ Your application has been accepted!</p>
-                          <p>
-                            <strong>Email:</strong>{" "}
-                            {application.listing?.provider?.email}
-                          </p>
-                          <p>
-                            <strong>Phone:</strong>{" "}
-                            {application.listing?.provider?.phone_number}
-                          </p>
-                        </div>
+                        <>
+                          <div className="accepted-contact">
+                            <p>✅ Your application has been accepted!</p>
+                            <p>
+                              <strong>Email:</strong>{" "}
+                              {application.listing?.provider?.email}
+                            </p>
+                            <p>
+                              <strong>Phone:</strong>{" "}
+                              {application.listing?.provider?.phone_number}
+                            </p>
+                          </div>
+
+                          {/* 💬 ChatBox shfaqet vetëm nëse është accepted */}
+                          {application.listing?.provider?.id &&
+                            application.listing?.id && (
+                              <div style={{ marginTop: "10px" }}>
+                                <ChatBox
+                                  seekerId={authUser.id}
+                                  providerId={application.listing.provider.id}
+                                  listingId={application.listing.id}
+                                  currentUserId={authUser.id}
+                                />
+                              </div>
+                            )}
+                        </>
                       )}
                     </div>
+
                     <div className="application-status">
                       <span
                         className="status-badge"
@@ -197,6 +215,7 @@ const SeekerDashboard = () => {
                         {room.listing?.bedrooms || "?"} bedrooms
                       </small>
                     </div>
+
                     <div className="room-actions">
                       <button
                         className="view-btn"
